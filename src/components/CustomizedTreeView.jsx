@@ -11,7 +11,7 @@ const TreeNode = ({ id, label, children, others }) => (
     )) : <Box>
       <Typography id="qr">{others.qr}</Typography>
       <Typography id="repT">Repuestos Cambiados:</Typography>
-      <div style={{paddingLeft:"1rem",paddingBottom:"1rem"}}>
+      <div style={{paddingLeft:"1rem",paddingBottom:"1rem",display:"flex",flexDirection:"column"}}>
         {others.repuestos_cambiados.split(',').map((repuesto,index)=>(
           <Typography key={index} variant='p'> - {repuesto}</Typography>
         ))}
