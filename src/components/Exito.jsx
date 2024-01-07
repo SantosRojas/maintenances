@@ -3,7 +3,7 @@ import { Box, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 
-const Exito = ({ setShowForm }) => {
+const Exito = ({ setShowForm,textAux="Registrar otra" }) => {
     const navigate = useNavigate()
     const handleHome = (event) => {
         navigate("/home")
@@ -11,7 +11,6 @@ const Exito = ({ setShowForm }) => {
 
     const handleRegister = (event) => {
         setShowForm(true);
-        navigate("/add")
     }
     return (
 
@@ -25,7 +24,7 @@ const Exito = ({ setShowForm }) => {
                     Ver Registros
                 </Button>
                 <Button variant="contained" color="primary" style={{ marginLeft: '1rem' }} onClick={handleRegister}>
-                    Registrar otra
+                    {textAux}
                 </Button>
             </Box>
         </Box>

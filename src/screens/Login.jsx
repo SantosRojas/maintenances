@@ -45,13 +45,16 @@ const Login = () => {
                     setPassword("")
                     navigate('/home')
                 } else {
+                    setLoading(false);
                     setTextError("Usuario no registrado")
                     setErrorPopupOpen(true);
                 }
             })
             .catch(error => {
+                setLoading(false);
                 setTextError("Usuario o contraseña incorrectos")
                 setErrorPopupOpen(true);
+                
             });
     };
 

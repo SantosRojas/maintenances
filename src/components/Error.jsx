@@ -1,13 +1,9 @@
 import { Box, Button, Typography } from "@mui/material";
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import { useNavigate } from "react-router-dom";
 
 const Error = ({ setShowForm}) => {
-    const navigate = useNavigate()
     const handleRegister = (event) => {
-        setShowForm(true);
-        navigate("/add")
-    }
+        setShowForm(true);    }
     return (
         <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center">
             < ErrorOutlineIcon color="error" style={{ fontSize: 48 }} />
