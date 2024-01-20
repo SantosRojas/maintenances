@@ -1,12 +1,12 @@
 import { useEffect, useState} from "react"
 import { useNavigate } from "react-router-dom";
 import { Container, Paper, Autocomplete, Box, Button, CircularProgress, Modal, TextField, Typography, IconButton } from "@mui/material"
-import Variants from "../components/skeletonForm"
 import { formatDate } from "../utils/common"
 import ListadoRepuestos from "../components/ListadoRepuestos"
 import Exito from "../components/Exito"
 import Error from "../components/Error"
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
+import { FormSkeleton } from "../components/skeleton";
 
 const AddMantos = () => {
 
@@ -257,7 +257,7 @@ const AddMantos = () => {
                                             </Modal>
                                         )}
                                     </form>
-                                ) : <Variants />
+                                ) : <FormSkeleton />
                             }
                         </Box>
                     ) : (

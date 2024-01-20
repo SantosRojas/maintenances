@@ -10,6 +10,7 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import ListView from "../components/ListView";
+import { ListSkeleton } from "../components/skeleton";
 
 const Home = () => {
   const [datos, setDatos] = useState([])
@@ -17,7 +18,8 @@ const Home = () => {
   const [searchTerm, setSearchTerm] = useState(null)
   const [searchLabel, setSearchLabel] = useState("")
   const [optionsAutocomplete, setOptionsAutocomplete] = useState(null)
-  const [isTreeView,setIsTreeView] = useState(false)
+  const [isTreeView, setIsTreeView] = useState(false)
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   const optionsKey = useMemo(() => ({
     "Buscar por Serie": "serie",
@@ -34,7 +36,6 @@ const Home = () => {
           throw new Error('Hubo un problema con la petición Fetch de mantenimientos: ' + responseMantenimientos.status);
         }
         const dataMantenimientos = await responseMantenimientos.json();
-
 
         let keyToMap;
         if (searchLabel === "Buscar por Serie") {
@@ -85,13 +86,13 @@ const Home = () => {
           console.log(optionsInstConNombres)
         }
         if (searchLabel === "Buscar por Responsable") {
-          const   resptOptMap = new Map();
+          const resptOptMap = new Map();
           dataResponsables.forEach(tecnico => {
-              resptOptMap.set(tecnico.id, tecnico.usuario);
+            resptOptMap.set(tecnico.id, tecnico.usuario);
           });
 
           const optionsRespConNombres = options.map(it => {
-            const nombreRespOption =   resptOptMap.get(it.responsable_id);
+            const nombreRespOption = resptOptMap.get(it.responsable_id);
             return {
               ...it,
               responsable: nombreRespOption || 'Responsable no encontrado',
@@ -122,6 +123,7 @@ const Home = () => {
 
         // Mover la actualización de datos después de obtener los datos
         setDatos(dataConNombres);
+        setDataLoaded(true)
       } catch (error) {
         console.error('Error al obtener y procesar los datos:', error);
       }
@@ -132,19 +134,6 @@ const Home = () => {
   }, [searchLabel, optionsKey, searchTerm]);
 
 
-
-
-  if (!datos) {
-    return (
-      <Container>
-        <p>Cargando datos...</p>
-      </Container>
-    );
-  }
-
-
-
-
   return (
     <Container
       maxWidth="sm"
@@ -153,7 +142,7 @@ const Home = () => {
         justifyItems: "center",
         alignItems: "center",
         marginTop: "1rem",
-        marginBottom:"1rem"
+        marginBottom: "1rem"
       }}
     >
       <Paper elevation={3}
@@ -173,14 +162,14 @@ const Home = () => {
               {
                 isTreeView ? (
                   <AccountTreeIcon />
-                ):(
+                ) : (
                   <FormatListNumberedIcon />
                 )
               }
-            </IconButton> 
+            </IconButton>
             <Typography variant="h6"><strong>Mantenimientos</strong></Typography>
             <MiMenu setSearchLabel={setSearchLabel} />
-            <IconButton color="primary" aria-label="add-mantos"  onClick={(e) => navigate("/add")}>
+            <IconButton color="primary" aria-label="add-mantos" onClick={(e) => navigate("/add")}>
               <AddCircleIcon fontSize="large" />
             </IconButton>
           </Box>
@@ -188,32 +177,45 @@ const Home = () => {
           {
             searchLabel !== "" && optionsAutocomplete !== null && (
               <Box
-              display="flex"
-              padding=".5rem"
-              boxSizing="border-box"
-              width="100%">
+                display="flex"
+                padding=".5rem"
+                boxSizing="border-box"
+                width="100%">
                 <Autocomplete
-                size="small"
-                fullWidth
-                id="autocomplete"
-                options={optionsAutocomplete}
-                getOptionLabel={(option) => option[optionsKey[searchLabel].replace("_id", "")]}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                value={searchTerm}
-                onChange={(_, value) => { setSearchTerm(value) }}
-                renderInput={(params) => <TextField {...params} label={searchLabel} fullWidth required />}
-              />
+                  size="small"
+                  fullWidth
+                  id="autocomplete"
+                  options={optionsAutocomplete}
+                  getOptionLabel={(option) => option[optionsKey[searchLabel].replace("_id", "")]}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                  value={searchTerm}
+                  onChange={(_, value) => { setSearchTerm(value) }}
+                  renderInput={(params) => <TextField {...params} label={searchLabel} fullWidth required />}
+                />
               </Box>
             )
           }
           {
-            isTreeView ? (
-              <CustomizedTreeView data={[...datos].reverse()} />
-            ):(
-              <ListView data={[...datos].reverse()} setDatos={setDatos}/>
+            (dataLoaded) ? (
+              isTreeView ? (
+                <CustomizedTreeView data={[...datos].reverse()} />
+              ) : (
+                <ListView data={[...datos].reverse()} setDatos={setDatos} />
+              )
+            ) : (
+              <Box sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                width: "95%",
+                paddingTop: "1rem",
+                paddingBottom: "1rem"
+              }}>
+                <ListSkeleton />
+              </Box>
             )
           }
-        
+
         </Box>
 
       </Paper>
