@@ -20,7 +20,7 @@ const AddMantos = () => {
     const [institucion, setInstitucion] = useState(null)
     const [servicio, setServicio] = useState(null)
     const [comentarios, setComentarios] = useState("")
-    const [date, setDate] = useState(formatDate())
+    const [date, setDate] = useState(formatDate(undefined, true))
 
 
     //VARIABLES EL FETCH

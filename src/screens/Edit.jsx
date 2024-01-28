@@ -66,7 +66,7 @@ const Edit = () => {
                 setInstitucion(institucionesData.find((inst) => inst.id === mantenimientoData[0].institucion_id));
                 setServicio(serviciosData.find((serv) => serv.servicio === mantenimientoData[0].servicio));
                 setComentarios(mantenimientoData[0].comentarios);
-                setDate(formatDate(mantenimientoData[0].fecha_registro));
+                setDate(formatDate(mantenimientoData[0].fecha_registro,true));
                 const repuestosResponse = mantenimientoData[0].repuestos_cambiados.split(', ')
                 setRepuestoCambiados(repuestosResponse)
                 setRepuestoCambiado(repuestosData.find((repuesto) => repuesto.repuesto===repuestosResponse[repuestosResponse.length-1]))

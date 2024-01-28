@@ -1,29 +1,33 @@
-export function formatDate(dateString, separator = '-') {
+export function formatDate(dateString, firstYear=false, separator = '-') {
   const inputDate = dateString ? new Date(dateString) : new Date();
 
   const year = inputDate.getFullYear();
   const month = String(inputDate.getMonth() + 1).padStart(2, '0');
   const date = String(inputDate.getDate()).padStart(2, '0');
 
-  return `${year}${separator}${month}${separator}${date}`;
+  if (firstYear){
+    return `${year}${separator}${month}${separator}${date}`;
+  }else{
+    return `${date}${separator}${month}${separator}${year}`;
+  }
 }
 
 
 export const organizarDatosPorFecha = (datos) => {
-  const datosOrganizados = {};
-
-  datos.forEach((manto) => {
+  const datosOrganizados = datos.reduce((obj, manto) => {
     const fechaRegistro = formatDate(manto.fecha_registro);
+    obj[fechaRegistro] = obj[fechaRegistro] || [];
+    obj[fechaRegistro].push(manto);
+    return obj;
+  }, {});
 
-    if (!datosOrganizados[fechaRegistro]) {
-      datosOrganizados[fechaRegistro] = [];
-    }
+  const datosOrdenados = Object.fromEntries(
+    Object.entries(datosOrganizados).sort((a, b) => new Date(b[0]) - new Date(a[0]))
+  );
 
-    datosOrganizados[fechaRegistro].push(manto);
-  });
-
-  return datosOrganizados;
+  return datosOrdenados;
 };
+
 
 export const organizarJerarquia = (lista) => {
   const resultado = {};

@@ -160,7 +160,7 @@ const Home = () => {
           >
             <IconButton color="primary" aria-label="views" onClick={(e) => setIsTreeView(!isTreeView)}>
               {
-                isTreeView ? (
+                !isTreeView ? (
                   <AccountTreeIcon />
                 ) : (
                   <FormatListNumberedIcon />

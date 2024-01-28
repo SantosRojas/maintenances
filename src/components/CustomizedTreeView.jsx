@@ -23,7 +23,9 @@ const TreeNode = ({ id, label, children, others }) => (
 
 
 const CustomizedTreeView = ({ data }) => {
-  const datosOrganizados = organizarJerarquia(data);
+  const datosOrdenados = data.sort((a, b) => new Date(b.fecha_registro) - new Date(a.fecha_registro));
+
+  const datosOrganizados = organizarJerarquia(datosOrdenados);
   const datosTreeView = Object.entries(datosOrganizados).map(([fecha, instituciones]) => ({
     id: fecha,
     label: `Fecha: ${fecha}`,
