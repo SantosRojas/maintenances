@@ -1,4 +1,4 @@
-import { useEffect, useState} from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom";
 import { Container, Paper, Autocomplete, Box, Button, CircularProgress, Modal, TextField, Typography, IconButton } from "@mui/material"
 import { formatDate } from "../utils/common"
@@ -7,6 +7,7 @@ import Exito from "../components/Exito"
 import Error from "../components/Error"
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import { FormSkeleton } from "../components/skeleton";
+import Warning from "../components/Warning";
 
 const AddMantos = () => {
 
@@ -49,6 +50,7 @@ const AddMantos = () => {
     ]
     const [showForm, setShowForm] = useState(true)
     const [exito, setExito] = useState(true)
+    const [warning, setWarning] = useState(false)
 
     const navigate = useNavigate()
 
@@ -72,25 +74,8 @@ const AddMantos = () => {
     }, []);
 
 
-    const handleAddData = (e) => {
-        e.preventDefault();
-        setLoading(true);
-        const dataToSend = {
-            "serie": serie,
-            "qr": qr,
-            "modelo": modelo.tipo,
-            "tipo_mantenimiento": tipoMantenimiento.tipo,
-            "repuestos_cambiados": repuestosCambiados.join(', '),
-            "institucion_id": institucion.id,
-            "servicio": servicio.servicio,
-            "responsable_id": currentUser.id,
-            "comentarios": comentarios,
-            "fecha_registro": date
-        }
 
-        console.log(dataToSend)
-
-
+    const sendData = (dataToSend) => {
         fetch("https://ssttapi.mibbraun.pe/mantenimientos", {
             method: "POST",
             mode: "cors",
@@ -119,7 +104,50 @@ const AddMantos = () => {
             });
 
         console.log("agreganddo data")
+    }
+
+    const handleAddData = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        const dataToSend = {
+            "serie": serie,
+            "qr": qr,
+            "modelo": modelo.tipo,
+            "tipo_mantenimiento": tipoMantenimiento.tipo,
+            "repuestos_cambiados": repuestosCambiados.join(', '),
+            "institucion_id": institucion.id,
+            "servicio": servicio.servicio,
+            "responsable_id": currentUser.id,
+            "comentarios": comentarios,
+            "fecha_registro": date
+        };
+
+        console.log(dataToSend);
+
+        try {
+            const response = await fetch("https://ssttapi.mibbraun.pe/mantenimientos");
+            const data = await response.json();
+
+            // Verificar si la serie coincide para la misma fecha
+            const serieCoincide = data.some((registro) => registro.serie === dataToSend.serie && formatDate(registro.fecha_registro, true) === dataToSend.fecha_registro);
+
+            if (serieCoincide) {
+                setLoading(false)
+                setShowForm(false);
+                setExito(false)
+                setWarning(true)
+                // Realizar acciones adicionales si la serie coincide.
+            } else {
+                sendData(dataToSend)
+            }
+
+        } catch (error) {
+            console.error("Error al obtener los mantenimientos:", error);
+            setLoading(false)
+            setExito(false)
+        }
     };
+
 
     const handleDeleteItem = (indexToDelete) => {
         // Crea una nueva matriz sin el elemento en el índice dado
@@ -134,19 +162,19 @@ const AddMantos = () => {
                 sx={
                     { display: "flex", marginTop: "1rem", flexDirection: "column", gap: "1rem", padding: ".5rem", width: "100%", alignItems: "center" }
                 }>
-                    <Box
+                <Box
                     display="flex"
                     gap="1rem"
                     justifyContent="center"
                     alignItems="center"
-                    >
-                        <IconButton color="primary" aria-label="arrow-back" onClick={e => navigate("/home")}>
-                            <ArrowBackRoundedIcon />
-                        </IconButton>
+                >
+                    <IconButton color="primary" aria-label="arrow-back" onClick={e => navigate("/home")}>
+                        <ArrowBackRoundedIcon />
+                    </IconButton>
 
-                        <Typography variant="h6" sx={{fontWeight:"bold"}}>Add Maintenance</Typography>
+                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>Add Maintenance</Typography>
 
-                    </Box>
+                </Box>
                 {
                     showForm ? (
                         <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", width: "100%" }}>
@@ -235,7 +263,7 @@ const AddMantos = () => {
                                         />
 
 
-                                        <TextField size="small" type="date" value={date} label="Fecha" onChange={(e) => setDate(e.target.value)} required/>
+                                        <TextField size="small" type="date" value={date} label="Fecha" onChange={(e) => setDate(e.target.value)} required />
 
                                         <TextField size="small" type="text" value={comentarios} label="Comentarios" onChange={(e) => setComentarios(e.target.value)} />
 
@@ -263,7 +291,12 @@ const AddMantos = () => {
                     ) : (
                         exito ? (
                             <Exito setShowForm={setShowForm} />
-                        ) : (< Error setShowForm={setShowForm} />)
+                        ) : (
+                            warning ? (
+                                <Warning setShowForm={setShowForm} />
+                            ) : < Error setShowForm={setShowForm} />
+
+                        )
                     )
                 }
             </Paper>

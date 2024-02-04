@@ -10,6 +10,7 @@ const TreeNode = ({ id, label, children, others }) => (
       <TreeNode key={child.id} {...child} />
     )) : <Box>
       <Typography id="qr">{others.qr}</Typography>
+      <Typography id="">{others.modelo}</Typography>
       <Typography id="repT">Repuestos Cambiados:</Typography>
       <div style={{paddingLeft:"1rem",paddingBottom:"1rem",display:"flex",flexDirection:"column"}}>
         {others.repuestos_cambiados.split(',').map((repuesto,index)=>(
@@ -23,35 +24,34 @@ const TreeNode = ({ id, label, children, others }) => (
 
 
 const CustomizedTreeView = ({ data }) => {
+  // Organiza los datos
   const datosOrdenados = data.sort((a, b) => new Date(b.fecha_registro) - new Date(a.fecha_registro));
-
   const datosOrganizados = organizarJerarquia(datosOrdenados);
+
+  // Crea la estructura para el TreeView
   const datosTreeView = Object.entries(datosOrganizados).map(([fecha, instituciones]) => ({
     id: fecha,
-    label: `Fecha: ${fecha}`,
+    label: `Fecha: ${fecha} - Nh: ${Object.entries(instituciones).length}`,
     children: Object.entries(instituciones).map(([institucion, servicios]) => ({
       id: `${fecha}-${institucion}`,
-      label: `Institución: ${institucion}`,
+      label: `Institución: ${institucion} - Nh: ${Object.entries(servicios).length}`,
       children: Object.entries(servicios).map(([servicio, mantenimientos]) => ({
         id: `${fecha}-${institucion}-${servicio}`,
-        label: `Servicio: ${servicio}`,
-        children: Object.entries(mantenimientos).map(([mantenimiento, modelos]) => ({
+        label: `Servicio: ${servicio} - Nh: ${Object.entries(mantenimientos).length}`,
+        children: Object.entries(mantenimientos).map(([mantenimiento, objetos]) => ({
           id: `${fecha}-${institucion}-${servicio}-${mantenimiento}`,
-          label: `Tipo Mantenimiento: ${mantenimiento}`,
-          children: Object.entries(modelos).map(([modelo, objetos]) => ({
-            id: `${fecha}-${institucion}-${servicio}-${mantenimiento}-${modelo}`,
-            label: `Modelo: ${modelo}`,
-            children: objetos.map((objeto) => ({
-              id: `${fecha}-${institucion}-${servicio}-${mantenimiento}-${modelo}-${objeto.serie}`,
-              label: `Serie: ${objeto.serie}`,
-              others: { qr: `Qr: ${objeto.qr}`, repuestos_cambiados: objeto.repuestos_cambiados }
-            })),
+          label: `Tipo Mantenimiento: ${mantenimiento}  - Nh: ${objetos.length}`,
+          children: objetos.map((objeto) => ({
+            id: `${fecha}-${institucion}-${servicio}-${mantenimiento}-${objeto.serie}`,
+            label: `Serie: ${objeto.serie}`,
+            others: { qr: `Qr: ${objeto.qr}`, repuestos_cambiados: objeto.repuestos_cambiados, modelo: `Modelo: ${objeto.modelo}` }
           })),
         })),
       })),
     })),
   }));
 
+  // Renderiza el TreeView
   return (
     <Box sx={{ minHeight: 270, flexGrow: 1, width: "100%" }}>
       <TreeView
@@ -74,4 +74,3 @@ const CustomizedTreeView = ({ data }) => {
 };
 
 export default CustomizedTreeView;
-

@@ -33,8 +33,9 @@ export const organizarJerarquia = (lista) => {
   const resultado = {};
 
   lista.forEach((objeto) => {
-    const { fecha_registro, institucion, servicio, tipo_mantenimiento, modelo } = objeto;
-    const fechaF= formatDate(fecha_registro)
+    const { fecha_registro, institucion, servicio, tipo_mantenimiento } = objeto;
+    const fechaF = formatDate(fecha_registro);
+
     if (!resultado[fechaF]) {
       resultado[fechaF] = {};
     }
@@ -48,14 +49,10 @@ export const organizarJerarquia = (lista) => {
     }
 
     if (!resultado[fechaF][institucion][servicio][tipo_mantenimiento]) {
-      resultado[fechaF][institucion][servicio][tipo_mantenimiento] = {};
+      resultado[fechaF][institucion][servicio][tipo_mantenimiento] = [];
     }
 
-    if (!resultado[fechaF][institucion][servicio][tipo_mantenimiento][modelo]) {
-      resultado[fechaF][institucion][servicio][tipo_mantenimiento][modelo] = [];
-    }
-
-    resultado[fechaF][institucion][servicio][tipo_mantenimiento][modelo].push(objeto);
+    resultado[fechaF][institucion][servicio][tipo_mantenimiento].push(objeto);
   });
 
   return resultado;
