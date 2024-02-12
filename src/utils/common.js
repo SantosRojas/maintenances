@@ -14,18 +14,15 @@ export function formatDate(dateString, firstYear=false, separator = '-') {
 
 
 export const organizarDatosPorFecha = (datos) => {
-  const datosOrganizados = datos.reduce((obj, manto) => {
+  const dataSortByDate = datos.sort((a, b) => new Date(b.fecha_registro) - new Date(a.fecha_registro));
+  const datosOrganizados = dataSortByDate.reduce((obj, manto) => {
     const fechaRegistro = formatDate(manto.fecha_registro);
     obj[fechaRegistro] = obj[fechaRegistro] || [];
     obj[fechaRegistro].push(manto);
     return obj;
   }, {});
 
-  const datosOrdenados = Object.fromEntries(
-    Object.entries(datosOrganizados).sort((a, b) => new Date(b[0]) - new Date(a[0]))
-  );
-
-  return datosOrdenados;
+  return datosOrganizados;
 };
 
 
