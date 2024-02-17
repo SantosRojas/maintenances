@@ -23,13 +23,20 @@ const TreeNode = ({ id, label, children, others }) => (
 );
 
 
-const CustomizedTreeView = ({ data }) => {
+const CustomizedTreeView = ({ data,viewAll}) => {
   // Organiza los datos
   const datosOrdenados = data.sort((a, b) => new Date(b.fecha_registro) - new Date(a.fecha_registro));
   const datosOrganizados = organizarJerarquia(datosOrdenados);
+  let datosLimitados
 
+  if (!viewAll){
+    datosLimitados = Object.fromEntries(Object.entries(datosOrganizados).slice(0, 1));
+  }else{
+    datosLimitados = datosOrganizados
+  }
+  
   // Crea la estructura para el TreeView
-  const datosTreeView = Object.entries(datosOrganizados).map(([fecha, instituciones]) => ({
+  const datosTreeView = Object.entries(datosLimitados).map(([fecha, instituciones]) => ({
     id: fecha,
     label: `Fecha: ${fecha} - Nh: ${Object.entries(instituciones).length}`,
     children: Object.entries(instituciones).map(([institucion, servicios]) => ({
@@ -53,7 +60,7 @@ const CustomizedTreeView = ({ data }) => {
 
   // Renderiza el TreeView
   return (
-    <Box sx={{ minHeight: 270, flexGrow: 1, width: "100%" }}>
+    <Box sx={{ marginBottom:"1rem", flexGrow: 1, width: "100%" }}>
       <TreeView
         aria-label="customized"
         defaultExpanded={Object.keys(datosOrganizados)}

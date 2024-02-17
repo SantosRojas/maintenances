@@ -5,8 +5,9 @@ import { useState } from 'react';
 import MyItem from './MyItem';
 
 
-const ListView = ({ data,setDatos }) => {
+const ListView = ({ data, setDatos, ListView, viewAll }) => {
     const datosOrganizados = organizarDatosPorFecha(data)
+    let datosLimitados
     const [showMaintenanceStates, setShowMaintenanceStates] = useState(
         Object.keys(datosOrganizados).reduce((acc, key) => {
             acc[key] = false;
@@ -22,6 +23,12 @@ const ListView = ({ data,setDatos }) => {
         }));
     };
 
+    if (!viewAll) {
+        datosLimitados = Object.fromEntries(Object.entries(datosOrganizados).slice(0, 1));
+    } else {
+        datosLimitados = datosOrganizados
+    }
+
     return (
         <Box
             display="flex"
@@ -36,7 +43,7 @@ const ListView = ({ data,setDatos }) => {
             {
 
 
-                Object.keys(datosOrganizados).map((key,index) => (
+                Object.keys(datosLimitados).map((key, index) => (
                     <Box
                         key={index}
                         display="flex"
@@ -63,8 +70,8 @@ const ListView = ({ data,setDatos }) => {
                         </Box>
                         {
                             showMaintenanceStates[key] && (
-                                datosOrganizados[key].map((item,index) => (
-                                    <MyItem key={index} item={item} setDatos = {setDatos} />
+                                datosOrganizados[key].map((item, index) => (
+                                    <MyItem key={index} item={item} setDatos={setDatos} />
                                 ))
                             )
                         }

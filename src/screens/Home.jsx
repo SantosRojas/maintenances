@@ -1,8 +1,7 @@
-import { Container, Paper, IconButton, Box } from "@mui/material";
+import { Container, Paper, IconButton, Box, Button, Typography } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import CustomizedTreeView from "../components/CustomizedTreeView";
 import { useNavigate } from "react-router-dom";
-import Typography from '@mui/material/Typography';
 import MiMenu from "../components/MiMenu";
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -11,6 +10,8 @@ import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import ListView from "../components/ListView";
 import { ListSkeleton } from "../components/skeleton";
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import { handleDownloadExcel } from "../utils/common";
 
 const Home = () => {
   const [datos, setDatos] = useState([])
@@ -20,6 +21,7 @@ const Home = () => {
   const [optionsAutocomplete, setOptionsAutocomplete] = useState(null)
   const [isTreeView, setIsTreeView] = useState(false)
   const [dataLoaded, setDataLoaded] = useState(false);
+  const [viewAll, setViewAll] = useState(false)
 
   const optionsKey = useMemo(() => ({
     "Buscar por Serie": "serie",
@@ -152,11 +154,12 @@ const Home = () => {
           flexDirection="column"
           justifyContent="center"
           alignItems="center"
+          paddingBottom="1rem"
         >
           <Box display="flex"
             justifyContent="center"
             alignItems="center"
-            gap=".5rem"
+            gap="1.5rem"
           >
             <IconButton color="primary" aria-label="views" onClick={(e) => setIsTreeView(!isTreeView)}>
               {
@@ -167,11 +170,13 @@ const Home = () => {
                 )
               }
             </IconButton>
-            <Typography variant="h6"><strong>Mantenimientos</strong></Typography>
-            <MiMenu setSearchLabel={setSearchLabel} />
+            <IconButton color="primary" aria-label="add-mantos" onClick={(e) => handleDownloadExcel(datos)}>
+              <FileDownloadIcon fontSize="large" />
+            </IconButton>
             <IconButton color="primary" aria-label="add-mantos" onClick={(e) => navigate("/add")}>
               <AddCircleIcon fontSize="large" />
             </IconButton>
+            <MiMenu setSearchLabel={setSearchLabel} />
           </Box>
 
           {
@@ -198,9 +203,9 @@ const Home = () => {
           {
             (dataLoaded) ? (
               isTreeView ? (
-                <CustomizedTreeView data={[...datos].reverse()} />
+                <CustomizedTreeView data={[...datos].reverse()} viewAll={viewAll} />
               ) : (
-                <ListView data={[...datos].reverse()} setDatos={setDatos} />
+                <ListView data={[...datos].reverse()} setDatos={setDatos} viewAll={viewAll} />
               )
             ) : (
               <Box sx={{
@@ -215,6 +220,21 @@ const Home = () => {
               </Box>
             )
           }
+          {(datos.length > 1) && (
+            <Button variant="contained" onClick={(e) => setViewAll(!viewAll)}>
+              {
+                viewAll ? (
+                  <Typography>
+                    Ver menos
+                  </Typography>
+                ) : (
+                  <Typography>
+                    Ver todos ({datos.length - 1}+)
+                  </Typography>
+                )
+              }
+            </Button>
+          )}
 
         </Box>
 

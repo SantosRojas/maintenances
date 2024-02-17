@@ -1,13 +1,15 @@
-export function formatDate(dateString, firstYear=false, separator = '-') {
+import ExcelJS from "exceljs"
+
+export function formatDate(dateString, firstYear = false, separator = '-') {
   const inputDate = dateString ? new Date(dateString) : new Date();
 
   const year = inputDate.getFullYear();
   const month = String(inputDate.getMonth() + 1).padStart(2, '0');
   const date = String(inputDate.getDate()).padStart(2, '0');
 
-  if (firstYear){
+  if (firstYear) {
     return `${year}${separator}${month}${separator}${date}`;
-  }else{
+  } else {
     return `${date}${separator}${month}${separator}${year}`;
   }
 }
@@ -54,3 +56,40 @@ export const organizarJerarquia = (lista) => {
 
   return resultado;
 };
+
+
+export const handleDownloadExcel = async (data, filename = 'data.xlsx') => {
+  try {
+    // Crea un nuevo libro de Excel
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Data');
+
+    // Definir las cabeceras
+    const headers = Object.keys(data[0]);
+    worksheet.addRow(headers);
+
+    // Agregar datos
+    data.forEach(obj => {
+      const row = [];
+      headers.forEach(header => {
+        row.push(obj[header]);
+      });
+      worksheet.addRow(row);
+    });
+
+    // Guardar el libro de Excel
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${filename}_${formatDate()}.xlsx`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    console.log('Archivo Excel descargado satisfactoriamente.');
+  } catch (err) {
+    console.error('Error al descargar el archivo Excel:', err);
+  }
+};
+
