@@ -11,13 +11,28 @@ import Warning from "../components/Warning";
 
 const AddMantos = () => {
 
+    const tipos = [
+        {
+            id: 1,
+            tipo: "Preventivo"
+        },
+        {
+            id: 2,
+            tipo: "Preventivo-Correctivo"
+        },
+        {
+            id: 3,
+            tipo: "Correctivo"
+        }
+    ]
+
     //VARIABLES PARA EL FORMULARIO
     const [serie, setSerie] = useState("")
     const [qr, setQr] = useState("")
     const [modelo, setModelo] = useState(null)
-    const [tipoMantenimiento, setTipoMantenimiento] = useState(null)
+    const [tipoMantenimiento, setTipoMantenimiento] = useState(tipos[0]);
     const [repuestoCambiado, setRepuestoCambiado] = useState(null)
-    const [repuestosCambiados, setRepuestoCambiados] = useState([])
+    const [repuestosCambiados, setRepuestosCambiados] = useState([])
     const [institucion, setInstitucion] = useState(null)
     const [servicio, setServicio] = useState(null)
     const [comentarios, setComentarios] = useState("")
@@ -34,20 +49,7 @@ const AddMantos = () => {
     const objetCurrentUser = localStorage.getItem("currentUser");
     const currentUser = JSON.parse(objetCurrentUser);
 
-    const tipos = [
-        {
-            id: 1,
-            tipo: "Preventivo"
-        },
-        {
-            id: 2,
-            tipo: "Preventivo-Correctivo"
-        },
-        {
-            id: 3,
-            tipo: "Correctivo"
-        }
-    ]
+
     const [showForm, setShowForm] = useState(true)
     const [exito, setExito] = useState(true)
     const [warning, setWarning] = useState(false)
@@ -68,12 +70,21 @@ const AddMantos = () => {
                 setServicios(serviciosData);
                 setModelos(modelosData);
                 setRepuestos(repuestosData)
+                setRepuestosCambiados([repuestosData[repuestosData.length - 1].repuesto])
                 setDataLoaded(true);// Marca los datos como cargados
             })
             .catch((error) => console.error(error));
     }, []);
 
 
+    useEffect(()=>{
+        tipoMantenimiento!==null &&(
+            tipoMantenimiento.tipo !== "Preventivo" && (
+                setRepuestosCambiados([])
+            )
+        )
+
+    },[tipoMantenimiento])
 
     const sendData = (dataToSend) => {
         fetch("https://ssttapi.mibbraun.pe/mantenimientos", {
@@ -152,7 +163,7 @@ const AddMantos = () => {
     const handleDeleteItem = (indexToDelete) => {
         // Crea una nueva matriz sin el elemento en el índice dado
         const updatedItems = repuestosCambiados.filter((_, index) => index !== indexToDelete);
-        setRepuestoCambiados(updatedItems);
+        setRepuestosCambiados(updatedItems);
     };
 
     return (
@@ -220,25 +231,32 @@ const AddMantos = () => {
                                             renderInput={(params) => <TextField {...params} label="Tipo de mantenimiento" fullWidth required />}
                                         />
 
-                                        <div style={{ width: "100%" }}>
-                                            <Autocomplete
-                                                size="small"
-                                                id="repuestos"
-                                                options={repuestos}
-                                                getOptionLabel={(option) => option.repuesto}
-                                                isOptionEqualToValue={(option, value) => option.id === value.id}
-                                                value={repuestoCambiado}
-                                                onChange={(_, value) => {
-                                                    console.log(value)
-                                                    setRepuestoCambiado(value)
-                                                    if (value !== null && !repuestosCambiados.includes(value.repuesto)) setRepuestoCambiados([value.repuesto, ...repuestosCambiados])
-                                                }}
-                                                renderInput={(params) => <TextField {...params} label="Repuestos cambiados" fullWidth required />}
-                                            />
-                                            {
-                                                repuestosCambiados.length > 0 && <ListadoRepuestos listado={repuestosCambiados} handleDeleteItem={handleDeleteItem} />
-                                            }
-                                        </div>
+                                        {
+                                            tipoMantenimiento !== null && (
+                                                (tipoMantenimiento.tipo !== "Preventivo") && (
+                                                    <div style={{ width: "100%" }}>
+                                                        <Autocomplete
+                                                            size="small"
+                                                            id="repuestos"
+                                                            options={repuestos}
+                                                            getOptionLabel={(option) => option.repuesto}
+                                                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                                                            value={repuestoCambiado}
+                                                            onChange={(_, value) => {
+                                                                setRepuestoCambiado(value)
+                                                                if (value !== null && !repuestosCambiados.includes(value.repuesto)) setRepuestosCambiados([value.repuesto, ...repuestosCambiados])
+                                                            }}
+                                                            renderInput={(params) => <TextField {...params} label="Repuestos cambiados" fullWidth required />}
+                                                        />
+                                                        {
+                                                            repuestosCambiados.length > 0 && <ListadoRepuestos listado={repuestosCambiados} handleDeleteItem={handleDeleteItem} />
+                                                        }
+                                                    </div>
+                                                )
+                                            )
+                                        }
+
+
 
                                         <Autocomplete
                                             id="institucion"
