@@ -58,7 +58,7 @@ export const organizarJerarquia = (lista) => {
 };
 
 
-export const handleDownloadExcel = async (data, filename = 'data.xlsx') => {
+export const handleDownloadExcel = async (data, filename = 'Mantenimientos') => {
   try {
     // Crea un nuevo libro de Excel
     const workbook = new ExcelJS.Workbook();

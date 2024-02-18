@@ -2,17 +2,18 @@ import React, { useState } from 'react';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 const options = [
   "Buscar por Serie",
   "Buscar por Institucion",
+  "Buscar por Fecha",
   "Buscar por Responsable"
 ];
 
 const defaultSelectedOption = options[0];
 
-export default function MiMenu({setSearchLabel}) {
+export default function MiMenu({ setSearchLabel }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -33,12 +34,13 @@ export default function MiMenu({setSearchLabel}) {
   return (
     <div>
       <IconButton
+        color="primary"
         aria-label="more"
         id="long-button"
         aria-controls={open ? 'long-menu' : undefined}
         onClick={handleClick}
       >
-        <MoreVertIcon />
+        <VisibilityIcon fontSize="large" />
       </IconButton>
       <Menu
         id="long-menu"

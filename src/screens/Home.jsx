@@ -11,7 +11,8 @@ import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import ListView from "../components/ListView";
 import { ListSkeleton } from "../components/skeleton";
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import { handleDownloadExcel } from "../utils/common";
+import { formatDate, handleDownloadExcel } from "../utils/common";
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 const Home = () => {
   const [datos, setDatos] = useState([])
@@ -26,6 +27,7 @@ const Home = () => {
   const optionsKey = useMemo(() => ({
     "Buscar por Serie": "serie",
     "Buscar por Institucion": "institucion_id",
+    "Buscar por Fecha": "fecha_registro",
     "Buscar por Responsable": "responsable_id"
   }), []);
 
@@ -44,6 +46,8 @@ const Home = () => {
           keyToMap = "serie";
         } else if (searchLabel === "Buscar por Institucion") {
           keyToMap = "institucion_id";
+        } else if (searchLabel === "Buscar por Fecha") {
+          keyToMap = "fecha_registro";
         } else {
           keyToMap = "responsable_id";
         }
@@ -57,7 +61,6 @@ const Home = () => {
             };
           });
 
-
         const responseInstituciones = await fetch("https://ssttapi.mibbraun.pe/instituciones");
         if (!responseInstituciones.ok) {
           throw new Error('Hubo un problema con la petición Fetch de instituciones: ' + responseInstituciones.status);
@@ -70,7 +73,9 @@ const Home = () => {
           throw new Error('Hubo un problema con la petición Fetch de Responsables: ' + responseResponsables.status);
         }
         const dataResponsables = await responseResponsables.json();
+
         setOptionsAutocomplete(options)
+
         if (searchLabel === "Buscar por Institucion") {
           const instOptMap = new Map();
           dataInstituciones.forEach(institucion => {
@@ -85,7 +90,6 @@ const Home = () => {
             };
           });
           setOptionsAutocomplete(optionsInstConNombres)
-          console.log(optionsInstConNombres)
         }
         if (searchLabel === "Buscar por Responsable") {
           const resptOptMap = new Map();
@@ -102,6 +106,14 @@ const Home = () => {
           });
           setOptionsAutocomplete(optionsRespConNombres)
           console.log(optionsRespConNombres)
+        }
+
+        if (searchLabel === "Buscar por Fecha") {
+          let optionsFechas = [...options].reverse()
+          options.forEach(objeto => {
+            objeto.fecha = formatDate(objeto.fecha_registro);
+          });
+          setOptionsAutocomplete(optionsFechas)
         }
 
         let dataFiltrada = [...dataMantenimientos]
@@ -159,9 +171,9 @@ const Home = () => {
           <Box display="flex"
             justifyContent="center"
             alignItems="center"
-            gap="1.5rem"
+            gap="1.2rem"
           >
-            <IconButton color="primary" aria-label="views" onClick={(e) => setIsTreeView(!isTreeView)}>
+            <IconButton color="primary" aria-label="views" onClick={(e) => setIsTreeView(!isTreeView)} title="Cambiar vista">
               {
                 !isTreeView ? (
                   <AccountTreeIcon />
@@ -170,13 +182,20 @@ const Home = () => {
                 )
               }
             </IconButton>
-            <IconButton color="primary" aria-label="add-mantos" onClick={(e) => handleDownloadExcel(datos)}>
+            <IconButton color="primary" aria-label="download-file" onClick={(e) => handleDownloadExcel(datos)} title="Descargar excel">
               <FileDownloadIcon fontSize="large" />
             </IconButton>
-            <IconButton color="primary" aria-label="add-mantos" onClick={(e) => navigate("/add")}>
+            <MiMenu setSearchLabel={setSearchLabel} />
+            {
+              searchLabel !== "" && (
+                <IconButton color="primary" aria-label="quit search" onClick={(e) => setSearchLabel("")} title="Quitar busqueda">
+                  <VisibilityOffIcon fontSize="large" />
+                </IconButton>
+              )
+            }
+            <IconButton color="primary" aria-label="add-mantos" onClick={(e) => navigate("/add")} title="Registrar manto">
               <AddCircleIcon fontSize="large" />
             </IconButton>
-            <MiMenu setSearchLabel={setSearchLabel} />
           </Box>
 
           {
@@ -191,7 +210,11 @@ const Home = () => {
                   fullWidth
                   id="autocomplete"
                   options={optionsAutocomplete}
-                  getOptionLabel={(option) => option[optionsKey[searchLabel].replace("_id", "")]}
+                  getOptionLabel={(option) => {
+                    return searchLabel === "Buscar por Fecha"
+                      ? option[optionsKey[searchLabel].replace("_registro", "")]
+                      : option[optionsKey[searchLabel].replace("_id", "")]
+                  }}
                   isOptionEqualToValue={(option, value) => option.id === value.id}
                   value={searchTerm}
                   onChange={(_, value) => { setSearchTerm(value) }}
@@ -220,7 +243,7 @@ const Home = () => {
               </Box>
             )
           }
-          {(datos.length > 1) && (
+          {(datos.length > 1 && searchLabel !== "Buscar por Fecha") && (
             <Button variant="contained" onClick={(e) => setViewAll(!viewAll)}>
               {
                 viewAll ? (
