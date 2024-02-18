@@ -252,7 +252,7 @@ const Home = () => {
                   </Typography>
                 ) : (
                   <Typography>
-                    Ver todos ({datos.length - 1}+)
+                    Ver todos ({datos.length})
                   </Typography>
                 )
               }

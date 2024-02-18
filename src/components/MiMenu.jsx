@@ -39,6 +39,7 @@ export default function MiMenu({ setSearchLabel }) {
         id="long-button"
         aria-controls={open ? 'long-menu' : undefined}
         onClick={handleClick}
+        title='Buscar'
       >
         <VisibilityIcon fontSize="large" />
       </IconButton>

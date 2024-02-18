@@ -63,7 +63,8 @@ const ListView = ({ data, setDatos, ListView, viewAll }) => {
                             <Button
                                 size="small"
                                 variant='contained'
-                                onClick={() => toggleMaintenance(key)}>
+                                onClick={() => toggleMaintenance(key)}
+                                title='Visualizar registros'>
                                 {datosOrganizados[key].length}
                             </Button>
 

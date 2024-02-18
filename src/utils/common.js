@@ -32,7 +32,7 @@ export const organizarJerarquia = (lista) => {
   const resultado = {};
 
   lista.forEach((objeto) => {
-    const { fecha_registro, institucion, servicio, tipo_mantenimiento } = objeto;
+    const { fecha_registro, institucion, servicio, modelo } = objeto;
     const fechaF = formatDate(fecha_registro);
 
     if (!resultado[fechaF]) {
@@ -47,11 +47,11 @@ export const organizarJerarquia = (lista) => {
       resultado[fechaF][institucion][servicio] = {};
     }
 
-    if (!resultado[fechaF][institucion][servicio][tipo_mantenimiento]) {
-      resultado[fechaF][institucion][servicio][tipo_mantenimiento] = [];
+    if (!resultado[fechaF][institucion][servicio][modelo]) {
+      resultado[fechaF][institucion][servicio][modelo] = [];
     }
 
-    resultado[fechaF][institucion][servicio][tipo_mantenimiento].push(objeto);
+    resultado[fechaF][institucion][servicio][modelo].push(objeto);
   });
 
   return resultado;
