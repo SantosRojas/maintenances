@@ -3,7 +3,7 @@ import { Box, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 
-const Exito = ({ setShowForm,textAux="Registrar otra" }) => {
+const Exito = ({ setShowForm,textAux="Registrar otra",message="Mantenimiento" }) => {
     const navigate = useNavigate()
     const handleHome = (event) => {
         navigate("/home")
@@ -16,7 +16,7 @@ const Exito = ({ setShowForm,textAux="Registrar otra" }) => {
 
         <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center">
             <Typography variant="h6" gutterBottom>
-                Incidencia registrada con éxito
+                {message} registrado con éxito
             </Typography>
             <CheckCircle color="primary" style={{ fontSize: 48 }} />
             <Box display="flex" justifyContent="center" mt={2}>

@@ -2,18 +2,19 @@ import React, { useState } from 'react';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import SearchIcon from '@mui/icons-material/Search';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { useNavigate } from 'react-router-dom';
 
 const options = [
-  "Buscar por Serie",
-  "Buscar por Institucion",
-  "Buscar por Fecha",
-  "Buscar por Responsable"
+  "Agregar Servicio",
+  "Agregar Institucion",
+  "Agregar Repuesto"
 ];
 
 const defaultSelectedOption = options[0];
 
-export default function MiMenu({ setSearchLabel }) {
+export default function AddSi() {
+  const navigate = useNavigate()
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -27,8 +28,17 @@ export default function MiMenu({ setSearchLabel }) {
   }
 
   const handleSelectedOption = (optionSelected) => {
+    if(optionSelected === options[0]){
+      navigate("/addc/servicio")
+    }
+    else if(optionSelected === options[1]){
+      navigate("/addc/institucion")
+    }
+    else{
+      navigate("/addc/repuesto")
+    }
     handleClose()
-    setSearchLabel(optionSelected)
+    console.log(optionSelected)
   };
 
   return (
@@ -41,7 +51,7 @@ export default function MiMenu({ setSearchLabel }) {
         onClick={handleClick}
         title='Buscar'
       >
-        <SearchIcon fontSize="large" />
+        <MoreVertIcon fontSize="large" />
       </IconButton>
       <Menu
         id="long-menu"

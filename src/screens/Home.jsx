@@ -12,7 +12,8 @@ import ListView from "../components/ListView";
 import { ListSkeleton } from "../components/skeleton";
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { formatDate, handleDownloadExcel } from "../utils/common";
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import SearchOffIcon from '@mui/icons-material/SearchOff';
+import AddSi from "../components/AddSi";
 
 const Home = () => {
   const [datos, setDatos] = useState([])
@@ -23,7 +24,6 @@ const Home = () => {
   const [isTreeView, setIsTreeView] = useState(false)
   const [dataLoaded, setDataLoaded] = useState(false);
   const [viewAll, setViewAll] = useState(false)
-
   const optionsKey = useMemo(() => ({
     "Buscar por Serie": "serie",
     "Buscar por Institucion": "institucion_id",
@@ -171,7 +171,7 @@ const Home = () => {
           <Box display="flex"
             justifyContent="center"
             alignItems="center"
-            gap="1.2rem"
+            gap="1rem"
           >
             <IconButton color="primary" aria-label="views" onClick={(e) => setIsTreeView(!isTreeView)} title="Cambiar vista">
               {
@@ -189,13 +189,15 @@ const Home = () => {
             {
               searchLabel !== "" && (
                 <IconButton color="primary" aria-label="quit search" onClick={(e) => setSearchLabel("")} title="Quitar busqueda">
-                  <VisibilityOffIcon fontSize="large" />
+                  <SearchOffIcon fontSize="large" />
                 </IconButton>
               )
             }
             <IconButton color="primary" aria-label="add-mantos" onClick={(e) => navigate("/add")} title="Registrar manto">
               <AddCircleIcon fontSize="large" />
             </IconButton>
+
+            <AddSi />
           </Box>
 
           {
@@ -260,7 +262,6 @@ const Home = () => {
           )}
 
         </Box>
-
       </Paper>
     </Container>
   )

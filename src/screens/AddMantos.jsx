@@ -77,14 +77,14 @@ const AddMantos = () => {
     }, []);
 
 
-    useEffect(()=>{
-        tipoMantenimiento!==null &&(
-            tipoMantenimiento.tipo !== "Preventivo" && (
-                setRepuestosCambiados([])
-            )
-        )
-
-    },[tipoMantenimiento])
+    useEffect(() => {
+        if (tipoMantenimiento && repuestos) {
+            const newRepuestosCambiados = tipoMantenimiento.tipo !== "Preventivo" 
+                ? [] 
+                : [repuestos[0].repuesto];
+            setRepuestosCambiados(newRepuestosCambiados);
+        }
+    }, [tipoMantenimiento, repuestos]);
 
     const sendData = (dataToSend) => {
         fetch("https://ssttapi.mibbraun.pe/mantenimientos", {
@@ -180,10 +180,10 @@ const AddMantos = () => {
                     alignItems="center"
                 >
                     <IconButton color="primary" aria-label="arrow-back" onClick={e => navigate("/home")}>
-                        <ArrowBackRoundedIcon />
+                        <ArrowBackRoundedIcon fontSize="large"/>
                     </IconButton>
 
-                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>Add Maintenance</Typography>
+                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>Nuevo Mantenimiento</Typography>
 
                 </Box>
                 {
