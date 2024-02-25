@@ -171,7 +171,7 @@ const Home = () => {
           <Box display="flex"
             justifyContent="center"
             alignItems="center"
-            gap="1rem"
+            gap=".5rem"
           >
             <IconButton color="primary" aria-label="views" onClick={(e) => setIsTreeView(!isTreeView)} title="Cambiar vista">
               {

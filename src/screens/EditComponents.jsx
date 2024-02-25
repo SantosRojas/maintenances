@@ -80,7 +80,8 @@ const EditComponents = () => {
                     <Box display="flex"
                         justifyContent="center"
                         alignItems="center"
-                        gap="1.2rem"
+                        gap=".5rem"
+                        paddingBottom=".5rem"
                     >
                         <IconButton color="primary" aria-label="arrow-back" onClick={() => navigate(`/addc/${key}`)}>
                             <ArrowBackRoundedIcon fontSize="large" />
@@ -109,6 +110,7 @@ const EditComponents = () => {
                             padding=".5rem"
                             boxSizing="border-box"
                             width="100%"
+                            paddingBottom="1rem"
                         >
                             <Autocomplete
                                 size="small"
