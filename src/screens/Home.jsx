@@ -27,7 +27,9 @@ const Home = () => {
   const optionsKey = useMemo(() => ({
     "Buscar por Serie": "serie",
     "Buscar por Institucion": "institucion_id",
+    "Buscar por Servicio": "servicio_id",
     "Buscar por Fecha": "fecha_registro",
+    "Buscar por Modelo": "modelo_id",
     "Buscar por Responsable": "responsable_id"
   }), []);
 
@@ -46,6 +48,10 @@ const Home = () => {
           keyToMap = "serie";
         } else if (searchLabel === "Buscar por Institucion") {
           keyToMap = "institucion_id";
+        } else if (searchLabel === "Buscar por Servicio") {
+          keyToMap = "servicio_id";
+        } else if (searchLabel === "Buscar por Modelo") {
+          keyToMap = "modelo_id";
         } else if (searchLabel === "Buscar por Fecha") {
           keyToMap = "fecha_registro";
         } else {
@@ -66,6 +72,18 @@ const Home = () => {
           throw new Error('Hubo un problema con la petición Fetch de instituciones: ' + responseInstituciones.status);
         }
         const dataInstituciones = await responseInstituciones.json();
+
+        const responseServicios = await fetch("https://ssttapi.mibbraun.pe/servicios");
+        if (!responseServicios.ok) {
+          throw new Error('Hubo un problema con la petición Fetch de servicios: ' + responseServicios.status);
+        }
+        const dataServicios = await responseServicios.json();
+
+        const responseModelos = await fetch("https://ssttapi.mibbraun.pe/tipos");
+        if (!responseModelos.ok) {
+          throw new Error('Hubo un problema con la petición Fetch de modelos: ' + responseModelos.status);
+        }
+        const dataModelos = await responseModelos.json();
 
 
         const responseResponsables = await fetch("https://ssttapi.mibbraun.pe/usuarios");
@@ -91,6 +109,39 @@ const Home = () => {
           });
           setOptionsAutocomplete(optionsInstConNombres)
         }
+
+        if (searchLabel === "Buscar por Servicio") {
+          const instOptMap = new Map();
+          dataServicios.forEach(servicio => {
+            instOptMap.set(servicio.id, servicio.servicio);
+          });
+
+          const optionsServConNombres = options.map(it => {
+            const nombreServicioOption = instOptMap.get(it.servicio_id);
+            return {
+              ...it,
+              servicio: nombreServicioOption || 'Servicio no encontrado',
+            };
+          });
+          setOptionsAutocomplete(optionsServConNombres)
+        }
+
+        if (searchLabel === "Buscar por Modelo") {
+          const instOptMap = new Map();
+          dataModelos.forEach(modelo => {
+            instOptMap.set(modelo.id, modelo.tipo);
+          });
+
+          const optionsModelsConNombres = options.map(it => {
+            const nombreModeloOption = instOptMap.get(it.modelo_id);
+            return {
+              ...it,
+              modelo: nombreModeloOption || 'Modelo no encontrado',
+            };
+          });
+          setOptionsAutocomplete(optionsModelsConNombres)
+        }
+
         if (searchLabel === "Buscar por Responsable") {
           const resptOptMap = new Map();
           dataResponsables.forEach(tecnico => {
@@ -105,7 +156,6 @@ const Home = () => {
             };
           });
           setOptionsAutocomplete(optionsRespConNombres)
-          console.log(optionsRespConNombres)
         }
 
         if (searchLabel === "Buscar por Fecha") {
@@ -214,8 +264,8 @@ const Home = () => {
                   options={optionsAutocomplete}
                   getOptionLabel={(option) => {
                     return searchLabel === "Buscar por Fecha"
-                      ? option[optionsKey[searchLabel].replace("_registro", "")]
-                      : option[optionsKey[searchLabel].replace("_id", "")]
+                      ? option && option[optionsKey[searchLabel]?.replace("_registro", "")] || "" // Manejo de undefined
+                      : option && option[optionsKey[searchLabel]?.replace("_id", "")] || ""; // Manejo de undefined
                   }}
                   isOptionEqualToValue={(option, value) => option.id === value.id}
                   value={searchTerm}

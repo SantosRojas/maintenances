@@ -7,7 +7,9 @@ import SearchIcon from '@mui/icons-material/Search';
 const options = [
   "Buscar por Serie",
   "Buscar por Institucion",
+  "Buscar por Servicio",
   "Buscar por Fecha",
+  "Buscar por Modelo",
   "Buscar por Responsable"
 ];
 
