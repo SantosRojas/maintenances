@@ -264,8 +264,8 @@ const Home = () => {
                   options={optionsAutocomplete}
                   getOptionLabel={(option) => {
                     return searchLabel === "Buscar por Fecha"
-                      ? option && option[optionsKey[searchLabel]?.replace("_registro", "")] || "" // Manejo de undefined
-                      : option && option[optionsKey[searchLabel]?.replace("_id", "")] || ""; // Manejo de undefined
+                      ? (option && option[optionsKey[searchLabel]?.replace("_registro", "")]) || "" // Manejo de undefined
+                      : (option && option[optionsKey[searchLabel]?.replace("_id", "")]) || ""; // Manejo de undefined
                   }}
                   isOptionEqualToValue={(option, value) => option.id === value.id}
                   value={searchTerm}
