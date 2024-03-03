@@ -61,10 +61,10 @@ const Edit = () => {
                 setMantenimiento(mantenimientoData[0]);
                 setSerie(mantenimientoData[0].serie);
                 setQr(mantenimientoData[0].qr);
-                setModelo(modelosData.find((modelo) => modelo.tipo === mantenimientoData[0].modelo));
+                setModelo(modelosData.find((modelo) => modelo.id === mantenimientoData[0].modelo_id));
                 setTipoMantenimiento(tipos.find((tipo) => tipo.tipo === mantenimientoData[0].tipo_mantenimiento));
                 setInstitucion(institucionesData.find((inst) => inst.id === mantenimientoData[0].institucion_id));
-                setServicio(serviciosData.find((serv) => serv.servicio === mantenimientoData[0].servicio));
+                setServicio(serviciosData.find((serv) => serv.id === mantenimientoData[0].servicio_id));
                 setComentarios(mantenimientoData[0].comentarios);
                 setDate(formatDate(mantenimientoData[0].fecha_registro,true));
                 const repuestosResponse = mantenimientoData[0].repuestos_cambiados.split(', ')
@@ -85,11 +85,11 @@ const Edit = () => {
             "id":id,
             "serie":serie,
             "qr":qr,
-            "modelo": modelo.tipo,
+            "modelo_id": modelo.id,
             "tipo_mantenimiento": tipoMantenimiento.tipo,
             "repuestos_cambiados": repuestosCambiados.join(', '),
             "institucion_id": institucion.id,
-            "servicio": servicio.servicio,
+            "servicio_id": servicio.id,
             "comentarios": comentarios,
             "fecha_registro": date
         };

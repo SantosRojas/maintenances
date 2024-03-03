@@ -171,19 +171,40 @@ const Home = () => {
           dataFiltrada = dataMantenimientos.filter(data => data[keyToMap] === searchTerm[keyToMap])
         }
 
+
+        //map for institucions
         const institucionesMap = new Map();
         dataInstituciones.forEach(institucion => {
           institucionesMap.set(institucion.id, institucion.institucion);
         });
 
+        //map for servicios
+        const serviciosMap = new Map();
+        dataServicios.forEach(servicio => {
+          serviciosMap.set(servicio.id, servicio.servicio);
+        });
+
+        //map for modelos
+        const modelosMap = new Map();
+        dataModelos.forEach(modelo => {
+          modelosMap.set(modelo.id, modelo.tipo);
+        });
+
 
         const dataConNombres = dataFiltrada.map(mantenimiento => {
           const nombreInstitucion = institucionesMap.get(mantenimiento.institucion_id);
+          const nombreServicio = serviciosMap.get(mantenimiento.servicio_id);
+          const nombreModelo = modelosMap.get(mantenimiento.modelo_id);
+
           return {
             ...mantenimiento,
             institucion: nombreInstitucion || 'Institución no encontrada',
+            servicio: nombreServicio || 'Servicio no encontrado',
+            modelo: nombreModelo || 'Modelo no encontrado'
           };
         });
+
+        console.log(dataConNombres)
 
         // Mover la actualización de datos después de obtener los datos
         setDatos(dataConNombres);

@@ -123,11 +123,11 @@ const AddMantos = () => {
         const dataToSend = {
             "serie": serie,
             "qr": qr,
-            "modelo": modelo.tipo,
+            "modelo_id": modelo.id,
             "tipo_mantenimiento": tipoMantenimiento.tipo,
             "repuestos_cambiados": repuestosCambiados.join(', '),
             "institucion_id": institucion.id,
-            "servicio": servicio.servicio,
+            "servicio_id": servicio.id,
             "responsable_id": currentUser.id,
             "comentarios": comentarios,
             "fecha_registro": date
