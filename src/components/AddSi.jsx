@@ -8,7 +8,8 @@ import { useNavigate } from 'react-router-dom';
 const options = [
   "Agregar Servicio",
   "Agregar Institucion",
-  "Agregar Repuesto"
+  "Agregar Repuesto",
+  "Cerrar Session"
 ];
 
 const defaultSelectedOption = options[0];
@@ -34,8 +35,10 @@ export default function AddSi() {
     else if(optionSelected === options[1]){
       navigate("/addc/institucion")
     }
-    else{
+    else if(optionSelected === options[2]){
       navigate("/addc/repuesto")
+    }else{
+      navigate("/",{ replace: true })
     }
     handleClose()
     console.log(optionSelected)

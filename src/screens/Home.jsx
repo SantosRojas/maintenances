@@ -251,24 +251,30 @@ const Home = () => {
             alignItems="center"
             gap=".5rem"
           >
-            <IconButton color="primary" aria-label="views" onClick={(e) => setIsTreeView(!isTreeView)} title="Cambiar vista">
-              {
-                !isTreeView ? (
-                  <AccountTreeIcon />
-                ) : (
-                  <FormatListNumberedIcon />
-                )
-              }
-            </IconButton>
-            <IconButton color="primary" aria-label="download-file" onClick={(e) => handleDownloadExcel(datos)} title="Descargar excel">
-              <FileDownloadIcon fontSize="large" />
-            </IconButton>
-            <MiMenu setSearchLabel={setSearchLabel} />
             {
-              searchLabel !== "" && (
-                <IconButton color="primary" aria-label="quit search" onClick={(e) => setSearchLabel("")} title="Quitar busqueda">
-                  <SearchOffIcon fontSize="large" />
-                </IconButton>
+              datos.length > 0 && (
+                <>
+                  <IconButton color="primary" aria-label="views" onClick={(e) => setIsTreeView(!isTreeView)} title="Cambiar vista">
+                    {
+                      !isTreeView ? (
+                        <AccountTreeIcon />
+                      ) : (
+                        <FormatListNumberedIcon />
+                      )
+                    }
+                  </IconButton>
+                  <IconButton color="primary" aria-label="download-file" onClick={(e) => handleDownloadExcel(datos)} title="Descargar excel">
+                    <FileDownloadIcon fontSize="large" />
+                  </IconButton>
+                  <MiMenu setSearchLabel={setSearchLabel} />
+                  {
+                    searchLabel !== "" && (
+                      <IconButton color="primary" aria-label="quit search" onClick={(e) => setSearchLabel("")} title="Quitar busqueda">
+                        <SearchOffIcon fontSize="large" />
+                      </IconButton>
+                    )
+                  }
+                </>
               )
             }
             <IconButton color="primary" aria-label="add-mantos" onClick={(e) => navigate("/add")} title="Registrar manto">
@@ -305,26 +311,26 @@ const Home = () => {
           }
           {
             (dataLoaded) ? (
-             datos.length>0 ? (
-               isTreeView ? (
-                <CustomizedTreeView data={[...datos].reverse()} viewAll={viewAll} />
+              datos.length > 0 ? (
+                isTreeView ? (
+                  <CustomizedTreeView data={[...datos].reverse()} viewAll={viewAll} />
+                ) : (
+                  <ListView data={[...datos].reverse()} setDatos={setDatos} viewAll={viewAll} />
+                )
               ) : (
-                <ListView data={[...datos].reverse()} setDatos={setDatos} viewAll={viewAll} />
+                <Box
+                  display="flex"
+                  width="90%"
+                  alignItems="center"
+                  padding=".7rem"
+                  boxSizing="border-box"
+                  borderRadius=".5rem"
+                  backgroundColor={theme.palette.primary.back}
+                  marginTop=".7rem"
+                >
+                  <Typography variant="h6" style={{ textAlign: "center" }}>No tiene mantenimientos registrados, agregue uno</Typography>
+                </Box>
               )
-             ):(
-              <Box
-              display="flex"
-              width="90%"
-              alignItems="center"
-              padding=".7rem"
-              boxSizing="border-box"
-              borderRadius=".5rem"
-              backgroundColor={theme.palette.primary.back}
-              marginTop=".7rem"
-              >
-                <Typography variant="h6" style={{textAlign:"center"}}>No tiene mantenimientos registrados, agregue uno</Typography>
-              </Box>
-             )
             ) : (
               <Box sx={{
                 display: "flex",
