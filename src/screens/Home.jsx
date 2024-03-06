@@ -14,6 +14,7 @@ import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { formatDate, handleDownloadExcel } from "../utils/common";
 import SearchOffIcon from '@mui/icons-material/SearchOff';
 import AddSi from "../components/AddSi";
+import { useTheme } from "@emotion/react";
 
 const Home = () => {
   const [datos, setDatos] = useState([])
@@ -24,6 +25,10 @@ const Home = () => {
   const [isTreeView, setIsTreeView] = useState(false)
   const [dataLoaded, setDataLoaded] = useState(false);
   const [viewAll, setViewAll] = useState(false)
+  const objetCurrentUser = localStorage.getItem("currentUser");
+  const currentUser = JSON.parse(objetCurrentUser);
+  const theme = useTheme()
+
   const optionsKey = useMemo(() => ({
     "Buscar por Serie": "serie",
     "Buscar por Institucion": "institucion_id",
@@ -33,11 +38,13 @@ const Home = () => {
     "Buscar por Responsable": "responsable_id"
   }), []);
 
+  const urlMantos = `https://ssttapi.mibbraun.pe/mantenimientos/responsableid/${currentUser.id}`
+
   useEffect(() => {
 
     const fetchData = async () => {
       try {
-        const responseMantenimientos = await fetch("https://ssttapi.mibbraun.pe/mantenimientos");
+        const responseMantenimientos = await fetch(urlMantos);
         if (!responseMantenimientos.ok) {
           throw new Error('Hubo un problema con la petición Fetch de mantenimientos: ' + responseMantenimientos.status);
         }
@@ -216,7 +223,7 @@ const Home = () => {
 
     // Eliminar datos de la dependencia
     fetchData();
-  }, [searchLabel, optionsKey, searchTerm]);
+  }, [searchLabel, optionsKey, searchTerm, urlMantos]);
 
 
   return (
@@ -298,11 +305,26 @@ const Home = () => {
           }
           {
             (dataLoaded) ? (
-              isTreeView ? (
+             datos.length>0 ? (
+               isTreeView ? (
                 <CustomizedTreeView data={[...datos].reverse()} viewAll={viewAll} />
               ) : (
                 <ListView data={[...datos].reverse()} setDatos={setDatos} viewAll={viewAll} />
               )
+             ):(
+              <Box
+              display="flex"
+              width="90%"
+              alignItems="center"
+              padding=".7rem"
+              boxSizing="border-box"
+              borderRadius=".5rem"
+              backgroundColor={theme.palette.primary.back}
+              marginTop=".7rem"
+              >
+                <Typography variant="h6" style={{textAlign:"center"}}>No tiene mantenimientos registrados, agregue uno</Typography>
+              </Box>
+             )
             ) : (
               <Box sx={{
                 display: "flex",
