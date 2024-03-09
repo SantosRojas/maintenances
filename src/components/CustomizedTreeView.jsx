@@ -1,21 +1,38 @@
 import * as React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Icon, Typography } from '@mui/material';
 import { TreeView } from '@mui/x-tree-view/TreeView';
 import { organizarJerarquia } from '../utils/common';
 import { CloseSquare, MinusSquare, PlusSquare, StyledTreeItem } from './TreeHandlers';
+import CropSquareIcon from '@mui/icons-material/CropSquare';
+
 
 const TreeNode = ({ id, label, children, others }) => (
   <StyledTreeItem key={id} nodeId={id} label={label}>
     {children && children.length > 0 ? children.map((child) => (
       <TreeNode key={child.id} {...child} />
     )) : <Box>
-      <Typography id="tipomanto">{others.tipo_mantenimiento}</Typography>
-      <Typography id="repT">Repuestos Cambiados:</Typography>
-      <div style={{ paddingLeft: "1rem", paddingBottom: "1rem", display: "flex", flexDirection: "column" }}>
-        {others.repuestos_cambiados.split(',').map((repuesto, index) => (
-          <Typography key={index} variant='p'> - {repuesto}</Typography>
-        ))}
-      </div>
+      <Typography id="tipomanto"><strong>Mantenimiento: </strong>{others.tipo_mantenimiento}</Typography>
+      {
+        others.tipo_mantenimiento !== "Preventivo" && (
+          <>
+            <Typography id="repT" fontWeight='bold'>Repuestos Cambiados:</Typography>
+            <div style={{ paddingLeft: ".5rem", paddingBottom: "1rem", display: "flex", flexDirection: "column" }}>
+              {others.repuestos_cambiados.split(',').map((repuesto, index) => (
+                <Box
+                  key={index}
+                  display="flex"
+                  alignItems="center"
+                  gap="0.5rem">
+                  <Icon>
+                    <CropSquareIcon fontSize='small' />
+                  </Icon>
+                  <Typography variant='p'>{repuesto}</Typography>
+                </Box>
+              ))}
+            </div>
+          </>
+        )
+      }
 
     </Box>}
   </StyledTreeItem>
@@ -37,29 +54,38 @@ const CustomizedTreeView = ({ data, viewAll }) => {
   // Crea la estructura para el TreeView
   const datosTreeView = Object.entries(datosLimitados).map(([fecha, instituciones]) => ({
     id: fecha,
-    label: <div style={{padding:".5rem 0"}}><Typography>{fecha} - Nh: {Object.entries(instituciones).length}</Typography></div>,
+    label: <div style={{ padding: ".5rem 0" }}><Typography><strong>{fecha}</strong> - {Object.entries(instituciones).length} Instituciones</Typography></div>,
     children: Object.entries(instituciones).map(([institucion, servicios]) => ({
       id: `${fecha}-${institucion}`,
-      label: <div style={{padding:".5rem 0"}}><Typography>{institucion} - Nh: {Object.entries(servicios).length}</Typography></div>,
+      label: <div style={{ padding: ".5rem 0" }}><Typography><strong>{institucion} </strong>- {Object.entries(servicios).length} Servicios</Typography></div>,
       children: Object.entries(servicios).map(([servicio, modelos]) => ({
         id: `${fecha}-${institucion}-${servicio}`,
-        label: <div style={{padding:".5rem 0"}}><Typography>{servicio} - Nh: {Object.entries(modelos).length}</Typography></div>,
+        label: <div style={{ padding: ".5rem 0" }}><Typography><strong>{servicio}</strong> - {Object.entries(modelos).length} Tipos</Typography></div>,
         children: Object.entries(modelos).map(([modelo, objetos]) => ({
           id: `${fecha}-${institucion}-${servicio}-${modelo}`,
-          label: <div style={{padding:".5rem 0"}}><Typography>{modelo}  - Nh: {objetos.length}</Typography></div>,
+          label: <div style={{ padding: ".5rem 0" }}><Typography><strong>{modelo}</strong>  - {objetos.length} Bombas</Typography></div>,
           children: objetos.map((objeto) => ({
             id: `${fecha}-${institucion}-${servicio}-${modelo}-${objeto.serie}`,
             label: (
-              <div style={{display:"flex", width:"100%",justifyContent:"space-between",padding:".5rem 0"}}>
+              <Box
+                display="flex"
+                width="95%"
+                justifyContent="space-between"
+                margin=".5rem 0"
+                paddingRight="0.5rem "
+                style={{
+                  borderRight: '.5rem solid ' + (objeto.tipo_mantenimiento !== "Preventivo" ? '#4A235A' : '#9B59B6')
+                }}
+                title="Mostrar detalles">
                 <Typography variant="p">
                   <strong>{objeto.serie}</strong>
                 </Typography>
                 <Typography variant="p">
-                {objeto.qr}
+                  {objeto.qr}
                 </Typography>
-              </div>
+              </Box>
             ),
-            others: { repuestos_cambiados: objeto.repuestos_cambiados, tipo_mantenimiento: `Mantenimiento: ${objeto.tipo_mantenimiento}` }
+            others: { repuestos_cambiados: objeto.repuestos_cambiados, tipo_mantenimiento: objeto.tipo_mantenimiento }
           })),
         })),
       })),

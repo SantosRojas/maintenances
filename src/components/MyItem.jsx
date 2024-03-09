@@ -84,7 +84,7 @@ const MyItem = ({ item, setDatos }) => {
                     borderRadius: '4px',
                     width: '100%',
                     boxSizing: 'border-box',
-                    borderLeft: '.5rem solid ' + (item.tipo_mantenimiento !== "Preventivo" ? 'red' : 'green')
+                    borderLeft: '.5rem solid ' + (item.tipo_mantenimiento !== "Preventivo" ? '#4A235A' : '#9B59B6')
                 }}
             >
                 <Box
@@ -97,7 +97,7 @@ const MyItem = ({ item, setDatos }) => {
                     <Typography variant='p' sx={{ fontWeight: 'bold' }}>{item.serie}</Typography>
                     <Typography variant='p' sx={{ fontWeight: 'bold' }}>{item.qr}</Typography>
                     <Typography variant='p' sx={{ fontWeight: 'bold' }}>{item.modelo}</Typography>
-                    <IconButton color="primary" aria-label="add-mantos" onClick={(e) => setShowDetails(!showDetails)}>
+                    <IconButton color="primary" aria-label="add-mantos" onClick={(e) => setShowDetails(!showDetails)} title="Mostrar detalles">
                         {showDetails ? (
                             <ArrowDropUpIcon fontSize="large" />
                         ) : (

@@ -5,6 +5,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import { Delete } from '@mui/icons-material';
+import { useTheme } from '@emotion/react';
 
 const style = {
     width: '100%',
@@ -12,6 +13,7 @@ const style = {
 };
 
 export default function ListadoRepuestos({ listado,handleDeleteItem }) {
+    const theme = useTheme()
     return (
         <List sx={style} component="nav" aria-label="mailbox folders">
             {
@@ -19,9 +21,14 @@ export default function ListadoRepuestos({ listado,handleDeleteItem }) {
                     <div key={index}>
                         <ListItem>
                             <ListItemText primary={item} />
-                            <ListItemIcon onClick={e=>{
+                            <ListItemIcon sx={{
+                                color:theme.palette.primary.main,
+                                cursor: "pointer"
+                            }} onClick={e=>{
                                 handleDeleteItem(index)
-                            }}>
+                            }}
+                            
+                            title={`Eliminar ${item}`}>
                                 <Delete />
                             </ListItemIcon>
                         </ListItem>
