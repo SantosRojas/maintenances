@@ -8,22 +8,26 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
+    List,
+    ListItem,
+    ListItemText,
+    Icon,
 } from "@mui/material";
 import { useTheme } from "@emotion/react";
-import { formatDate } from "../utils/common";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import { useNavigate } from "react-router-dom";
+import HomeRepairServiceIcon from '@mui/icons-material/HomeRepairService';
 
 
-const MyItem = ({ item,setDatos}) => {
+const MyItem = ({ item, setDatos }) => {
     const [showDetails, setShowDetails] = useState(false)
     const theme = useTheme()
     const navigate = useNavigate()
     const [openDialog, setOpenDialog] = useState(false);
     const [deleteMessage, setDeleteMessage] = useState(null);
-    const [openDialogResult,setOpenDialogResult] = useState(false)
-    const [exitoDelete,setExitoDelete] = useState(false)
+    const [openDialogResult, setOpenDialogResult] = useState(false)
+    const [exitoDelete, setExitoDelete] = useState(false)
 
 
     const handleDelete = () => {
@@ -34,13 +38,13 @@ const MyItem = ({ item,setDatos}) => {
     const confirmDelete = async () => {
         // Realiza la eliminación después de la confirmación
         setOpenDialog(false);
-    
+
         try {
             const response = await fetch(`https://ssttapi.mibbraun.pe/mantenimientos/${item.id}`, {
                 method: "DELETE",
                 mode: "cors",
             });
-    
+
             if (response.status === 200) {
                 // Aquí puedes manejar la eliminación exitosa
                 console.log("Elemento eliminado con éxito");
@@ -62,7 +66,7 @@ const MyItem = ({ item,setDatos}) => {
             setOpenDialogResult(true);
         }
     };
-    
+
     const cancelDelete = () => {
         // Cancela la eliminación y cierra el diálogo
         setOpenDialog(false);
@@ -79,17 +83,20 @@ const MyItem = ({ item,setDatos}) => {
                     padding: '0.5rem',
                     borderRadius: '4px',
                     width: '100%',
-                    boxSizing: 'border-box'
+                    boxSizing: 'border-box',
+                    borderLeft: '.5rem solid ' + (item.tipo_mantenimiento !== "Preventivo" ? 'red' : 'green')
                 }}
             >
                 <Box
                     display="flex"
                     justifyContent="space-between"
                     alignItems="center"
-                    sx={{ width: "100%" }}>
+                    sx={{
+                        width: "100%",
+                    }}>
                     <Typography variant='p' sx={{ fontWeight: 'bold' }}>{item.serie}</Typography>
+                    <Typography variant='p' sx={{ fontWeight: 'bold' }}>{item.qr}</Typography>
                     <Typography variant='p' sx={{ fontWeight: 'bold' }}>{item.modelo}</Typography>
-                    <Typography variant='p' sx={{ fontWeight: 'bold' }}>{item.tipo_mantenimiento}</Typography>
                     <IconButton color="primary" aria-label="add-mantos" onClick={(e) => setShowDetails(!showDetails)}>
                         {showDetails ? (
                             <ArrowDropUpIcon fontSize="large" />
@@ -101,11 +108,34 @@ const MyItem = ({ item,setDatos}) => {
                 {
                     showDetails && (
                         <>
-                            <Typography><strong>Qr:</strong> {item.qr}</Typography>
                             <Typography><strong>Institucion:</strong> {item.institucion}</Typography>
                             <Typography><strong>Servicio:</strong> {item.servicio}</Typography>
-                            <Typography><strong>Fecha:</strong> {formatDate(item.fecha_registro)}</Typography>
-                            <Typography><strong>Repuestos:</strong> {item.repuestos_cambiados}</Typography>
+                            {
+                                item.repuestos_cambiados !== "Ninguno" && (
+                                    <Box>
+                                <Typography><strong>Repuestos Cambiados:</strong></Typography>
+                                <List>
+                                    {
+                                        item.repuestos_cambiados.split(',').map((rep, index) => (
+                                            <ListItem key={index} disablePadding>
+                                                <Box
+                                                    display="flex"
+                                                    gap="1rem">
+                                                    <Icon color="primary">
+                                                        <HomeRepairServiceIcon />
+                                                    </Icon>
+                                                    <ListItemText >{rep}</ListItemText>
+                                                </Box>
+
+                                            </ListItem>
+                                        ))
+                                    }
+                                </List>
+                            </Box>
+                                )
+                            }
+
+                            <Typography> <strong>Mantenimiento:</strong> {item.tipo_mantenimiento}</Typography>
                             {item.comentarios !== "" && (
                                 <Typography><strong>Comentarios:</strong> {item.comentarios}</Typography>
                             )}
@@ -152,15 +182,15 @@ const MyItem = ({ item,setDatos}) => {
                     <DialogActions>
                         <Button onClick={(e) => {
                             setOpenDialogResult(false)
-                            if(exitoDelete) setDatos((prevDatos) => prevDatos.filter(dato => dato.id !== item.id))
-                            }} autoFocus>
+                            if (exitoDelete) setDatos((prevDatos) => prevDatos.filter(dato => dato.id !== item.id))
+                        }} autoFocus>
                             Ok
                         </Button>
                     </DialogActions>
                 </Dialog>
 
             </Box>
-        </Box>
+        </Box >
     )
 }
 

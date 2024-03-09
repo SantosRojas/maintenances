@@ -1,62 +1,69 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Button, Chip, CircularProgress, Container, Modal, Paper, TextField, Typography } from "@mui/material";
+import { Box, Button, Chip, CircularProgress, Container, IconButton, InputAdornment, Modal, Paper, TextField, Typography } from "@mui/material";
 import FaceIcon from '@mui/icons-material/Face';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const Login = () => {
-    const [errorPopupOpen, setErrorPopupOpen] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("Usuario o contraseña incorrectos.");
-    const [loading, setLoading] = useState(false);
+    const [formState, setFormState] = useState({
+        errorPopupOpen: false,
+        errorMessage: "Usuario o contraseña incorrectos.",
+        loading: false,
+        showPassword: false, // Nuevo estado para controlar la visibilidad de la contraseña
+    });
     const navigate = useNavigate();
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
         const username = e.target.username.value;
-        setLoading(true);
-        fetch("https://ssttapi.mibbraun.pe/login", {
-            method: 'POST',
-            mode: "cors",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                "username": username,
-                "password": e.target.password.value
-            })
-        })
-        .then(response => {
+        const password = e.target.password.value;
+
+        if (!username || !password) {
+            setFormState({ ...formState, errorMessage: "Por favor, ingrese usuario y contraseña.", errorPopupOpen: true });
+            return;
+        }
+
+        setFormState({ ...formState, loading: true });
+
+        try {
+            const response = await fetch("https://ssttapi.mibbraun.pe/login", {
+                method: 'POST',
+                mode: "cors",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "username": username,
+                    "password": password
+                })
+            });
+
             if (!response.ok) {
                 throw new Error("Usuario o contraseña incorrectos.");
             }
-            return response.json();
-        })
-        .then(data => {
-            // Se recibió una respuesta exitosa del servidor
-            var objetoJSON = JSON.stringify(data);
-            // Guardar la cadena JSON en localStorage
-            localStorage.setItem("currentUser", objetoJSON);
-            setLoading(false);
+
+            const data = await response.json();
+            localStorage.setItem("currentUser", JSON.stringify(data));
+            setFormState({ ...formState, loading: false });
             navigate('/home');
-        })
-        .catch(error => {
-            // Error al comunicarse con el servidor o credenciales incorrectas
-            setLoading(false);
-            setErrorMessage(error.message);
-            setErrorPopupOpen(true);
-        });
+        } catch (error) {
+            setFormState({ ...formState, loading: false, errorMessage: error.message, errorPopupOpen: true });
+        }
+    };
+
+    const toggleShowPassword = () => {
+        setFormState({ ...formState, showPassword: !formState.showPassword });
     };
 
     const closeErrorPopup = () => {
-        setErrorPopupOpen(false);
+        setFormState({ ...formState, errorPopupOpen: false });
     };
 
     return (
         <Container maxWidth="xs" sx={{ height: "100vh", display: "flex", alignItems: "center" }}>
             <Paper sx={{ width: "100%", display: "flex", flexDirection: "column", gap: "1rem", alignItems: "center", padding: "1rem 2rem" }} elevation={3}>
                 <Chip sx={{ width: "5rem" }} icon={<FaceIcon />} label="Login" color="primary" />
-                {loading && (
-                    <CircularProgress/>
-                )}
+                {formState.loading && <CircularProgress />}
                 <Box component="form" onSubmit={handleLogin}>
                     <TextField
                         margin="normal"
@@ -74,9 +81,22 @@ const Login = () => {
                         fullWidth
                         name="password"
                         label="Contraseña"
-                        type="password"
+                        type={formState.showPassword ? 'text' : 'password'}
                         id="password"
                         autoComplete="current-password"
+                        // Agregar icono para mostrar/ocultar contraseña
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={toggleShowPassword}
+                                    >
+                                        {formState.showPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
                     />
                     <Button
                         style={{ marginTop: "1rem", padding: ".7rem", fontWeight: "bold" }}
@@ -88,7 +108,7 @@ const Login = () => {
                         Iniciar sesión
                     </Button>
                 </Box>
-                <Modal open={errorPopupOpen} onClose={closeErrorPopup}>
+                <Modal open={formState.errorPopupOpen} onClose={closeErrorPopup}>
                     <div style={{
                         position: 'absolute',
                         top: '50%',
@@ -100,7 +120,7 @@ const Login = () => {
                         boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2)',
                         borderRadius: '10px',
                     }}>
-                        <Typography variant="h6" color="error">{errorMessage}</Typography>
+                        <Typography variant="h6" color="error">{formState.errorMessage}</Typography>
                         <Button variant="contained" color="primary" onClick={closeErrorPopup}>Cerrar</Button>
                     </div>
                 </Modal>

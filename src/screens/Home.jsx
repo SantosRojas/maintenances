@@ -211,7 +211,6 @@ const Home = () => {
           };
         });
 
-        console.log(dataConNombres)
 
         // Mover la actualización de datos después de obtener los datos
         setDatos(dataConNombres);
