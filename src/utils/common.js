@@ -1,11 +1,11 @@
 import ExcelJS from "exceljs"
 
 export function formatDate(dateString, firstYear = false, separator = '-') {
-  const inputDate = dateString ? new Date(dateString) : new Date();
+  const inputDate = dateString ? new Date(dateString) : new Date(); // Usar fecha actual si no se proporciona ninguna cadena
 
-  const year = inputDate.getFullYear();
-  const month = String(inputDate.getMonth() + 1).padStart(2, '0');
-  const date = String(inputDate.getDate()).padStart(2, '0');
+  const year = inputDate.getUTCFullYear();
+  const month = String(inputDate.getUTCMonth() + 1).padStart(2, '0');
+  const date = String(inputDate.getUTCDate()).padStart(2, '0');
 
   if (firstYear) {
     return `${year}${separator}${month}${separator}${date}`;

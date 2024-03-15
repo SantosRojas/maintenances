@@ -176,7 +176,7 @@ const Edit = () => {
                                             size="small"
                                             id="modelo"
                                             options={modelos}
-                                            getOptionLabel={(option) => option.tipo}
+                                            getOptionLabel={(option) => option.modelo}
                                             isOptionEqualToValue={(option, value) => option.id === value.id}
                                             value={modelo}
                                             onChange={(_, value) => setModelo(value)}

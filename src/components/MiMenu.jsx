@@ -9,8 +9,7 @@ const options = [
   "Buscar por Institucion",
   "Buscar por Servicio",
   "Buscar por Fecha",
-  "Buscar por Modelo",
-  "Buscar por Responsable"
+  "Buscar por Modelo"
 ];
 
 const defaultSelectedOption = options[0];

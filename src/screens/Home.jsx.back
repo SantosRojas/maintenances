@@ -34,60 +34,21 @@ const Home = () => {
     "Buscar por Institucion": "institucion_id",
     "Buscar por Servicio": "servicio_id",
     "Buscar por Fecha": "fecha_registro",
-    "Buscar por Modelo": "modelo_id"
+    "Buscar por Modelo": "modelo_id",
+    "Buscar por Responsable": "responsable_id"
   }), []);
 
   const urlMantos = `https://ssttapi.mibbraun.pe/mantenimientos/responsableid/${currentUser.id}`
-
-  async function fetchDatos(url) {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Hubo un problema con la petición Fetch de ${url}: ${response.status}`);
-    }
-    return response.json();
-  }
-
-  function mapOptions(options, data, idKey, labelKey, defaultValue) {
-    const instOptMap = new Map();
-    data.forEach(item => {
-      instOptMap.set(item.id, item[labelKey]);
-    });
-
-    const mappedOptions = options.map(it => {
-      const itemName = instOptMap.get(it[idKey]);
-      return {
-        ...it,
-        [labelKey]: itemName || defaultValue,
-      };
-    });
-
-    return mappedOptions;
-  }
-
-  function createMap(data, idKey, labelKey) {
-    const map = new Map();
-    data.forEach(item => {
-      map.set(item[idKey], item[labelKey]);
-    });
-    return map;
-  }
 
   useEffect(() => {
 
     const fetchData = async () => {
       try {
-
-        const [
-          dataMantenimientos,
-          dataInstituciones,
-          dataServicios,
-          dataModelos,
-        ] = await Promise.all([
-          fetchDatos(urlMantos),
-          fetchDatos("https://ssttapi.mibbraun.pe/instituciones"),
-          fetchDatos("https://ssttapi.mibbraun.pe/servicios"),
-          fetchDatos("https://ssttapi.mibbraun.pe/tipos"),
-        ]);
+        const responseMantenimientos = await fetch(urlMantos);
+        if (!responseMantenimientos.ok) {
+          throw new Error('Hubo un problema con la petición Fetch de mantenimientos: ' + responseMantenimientos.status);
+        }
+        const dataMantenimientos = await responseMantenimientos.json();
 
         let keyToMap;
         if (searchLabel === "Buscar por Serie") {
@@ -96,10 +57,12 @@ const Home = () => {
           keyToMap = "institucion_id";
         } else if (searchLabel === "Buscar por Servicio") {
           keyToMap = "servicio_id";
+        } else if (searchLabel === "Buscar por Modelo") {
+          keyToMap = "modelo_id";
         } else if (searchLabel === "Buscar por Fecha") {
           keyToMap = "fecha_registro";
         } else {
-          keyToMap = "modelo_id";
+          keyToMap = "responsable_id";
         }
 
         const options = Array.from(new Set(dataMantenimientos.map(item => item[keyToMap])))
@@ -111,41 +74,129 @@ const Home = () => {
             };
           });
 
+        const responseInstituciones = await fetch("https://ssttapi.mibbraun.pe/instituciones");
+        if (!responseInstituciones.ok) {
+          throw new Error('Hubo un problema con la petición Fetch de instituciones: ' + responseInstituciones.status);
+        }
+        const dataInstituciones = await responseInstituciones.json();
+
+        const responseServicios = await fetch("https://ssttapi.mibbraun.pe/servicios");
+        if (!responseServicios.ok) {
+          throw new Error('Hubo un problema con la petición Fetch de servicios: ' + responseServicios.status);
+        }
+        const dataServicios = await responseServicios.json();
+
+        const responseModelos = await fetch("https://ssttapi.mibbraun.pe/tipos");
+        if (!responseModelos.ok) {
+          throw new Error('Hubo un problema con la petición Fetch de modelos: ' + responseModelos.status);
+        }
+        const dataModelos = await responseModelos.json();
+
+
+        const responseResponsables = await fetch("https://ssttapi.mibbraun.pe/usuarios");
+        if (!responseResponsables.ok) {
+          throw new Error('Hubo un problema con la petición Fetch de Responsables: ' + responseResponsables.status);
+        }
+        const dataResponsables = await responseResponsables.json();
 
         setOptionsAutocomplete(options)
 
         if (searchLabel === "Buscar por Institucion") {
-          const optionsInstConNombres = mapOptions(options, dataInstituciones, 'institucion_id', 'institucion', 'Institución no encontrada');
-          setOptionsAutocomplete(optionsInstConNombres);
+          const instOptMap = new Map();
+          dataInstituciones.forEach(institucion => {
+            instOptMap.set(institucion.id, institucion.institucion);
+          });
+
+          const optionsInstConNombres = options.map(it => {
+            const nombreInstitucionOption = instOptMap.get(it.institucion_id);
+            return {
+              ...it,
+              institucion: nombreInstitucionOption || 'Institución no encontrada',
+            };
+          });
+          setOptionsAutocomplete(optionsInstConNombres)
         }
 
         if (searchLabel === "Buscar por Servicio") {
-          const optionsServConNombres = mapOptions(options, dataServicios, 'servicio_id', 'servicio', 'Servicio no encontrado');
-          setOptionsAutocomplete(optionsServConNombres);
+          const instOptMap = new Map();
+          dataServicios.forEach(servicio => {
+            instOptMap.set(servicio.id, servicio.servicio);
+          });
+
+          const optionsServConNombres = options.map(it => {
+            const nombreServicioOption = instOptMap.get(it.servicio_id);
+            return {
+              ...it,
+              servicio: nombreServicioOption || 'Servicio no encontrado',
+            };
+          });
+          setOptionsAutocomplete(optionsServConNombres)
         }
 
         if (searchLabel === "Buscar por Modelo") {
-          const optionsModelsConNombres = mapOptions(options, dataModelos, 'modelo_id', 'modelo', 'Modelo no encontrado');
-          setOptionsAutocomplete(optionsModelsConNombres);
+          const instOptMap = new Map();
+          dataModelos.forEach(modelo => {
+            instOptMap.set(modelo.id, modelo.tipo);
+          });
+
+          const optionsModelsConNombres = options.map(it => {
+            const nombreModeloOption = instOptMap.get(it.modelo_id);
+            return {
+              ...it,
+              modelo: nombreModeloOption || 'Modelo no encontrado',
+            };
+          });
+          setOptionsAutocomplete(optionsModelsConNombres)
         }
 
+        if (searchLabel === "Buscar por Responsable") {
+          const resptOptMap = new Map();
+          dataResponsables.forEach(tecnico => {
+            resptOptMap.set(tecnico.id, tecnico.usuario);
+          });
+
+          const optionsRespConNombres = options.map(it => {
+            const nombreRespOption = resptOptMap.get(it.responsable_id);
+            return {
+              ...it,
+              responsable: nombreRespOption || 'Responsable no encontrado',
+            };
+          });
+          setOptionsAutocomplete(optionsRespConNombres)
+        }
 
         if (searchLabel === "Buscar por Fecha") {
-          let optionsFechas = [...options].reverse();
-          optionsFechas.forEach(objeto => {
+          let optionsFechas = [...options].reverse()
+          options.forEach(objeto => {
             objeto.fecha = formatDate(objeto.fecha_registro);
           });
-          setOptionsAutocomplete(optionsFechas);
+          setOptionsAutocomplete(optionsFechas)
         }
+
         let dataFiltrada = [...dataMantenimientos]
         if (searchLabel !== "" && searchTerm !== null) {
           dataFiltrada = dataMantenimientos.filter(data => data[keyToMap] === searchTerm[keyToMap])
         }
 
 
-        const institucionesMap = createMap(dataInstituciones, 'id', 'institucion');
-        const serviciosMap = createMap(dataServicios, 'id', 'servicio');
-        const modelosMap = createMap(dataModelos, 'id', 'modelo');
+        //map for institucions
+        const institucionesMap = new Map();
+        dataInstituciones.forEach(institucion => {
+          institucionesMap.set(institucion.id, institucion.institucion);
+        });
+
+        //map for servicios
+        const serviciosMap = new Map();
+        dataServicios.forEach(servicio => {
+          serviciosMap.set(servicio.id, servicio.servicio);
+        });
+
+        //map for modelos
+        const modelosMap = new Map();
+        dataModelos.forEach(modelo => {
+          modelosMap.set(modelo.id, modelo.tipo);
+        });
+
 
         const dataConNombres = dataFiltrada.map(mantenimiento => {
           const nombreInstitucion = institucionesMap.get(mantenimiento.institucion_id);
