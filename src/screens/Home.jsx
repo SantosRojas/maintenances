@@ -14,20 +14,23 @@ import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { formatDate, handleDownloadExcel } from "../utils/common";
 import SearchOffIcon from '@mui/icons-material/SearchOff';
 import AddSi from "../components/AddSi";
-import { useTheme } from "@emotion/react";
 
 const Home = () => {
   const [datos, setDatos] = useState([])
   const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState(null)
   const [searchLabel, setSearchLabel] = useState("")
-  const [optionsAutocomplete, setOptionsAutocomplete] = useState(null)
+  const [optionsAutocomplete, setOptionsAutocomplete] = useState([])
   const [isTreeView, setIsTreeView] = useState(false)
   const [dataLoaded, setDataLoaded] = useState(false);
   const [viewAll, setViewAll] = useState(false)
   const objetCurrentUser = localStorage.getItem("currentUser");
   const currentUser = JSON.parse(objetCurrentUser);
-  const theme = useTheme()
+
+  const [dataMantenimientos, setDataMantenimientos] = useState([]);
+  const [dataInstituciones, setDataInstituciones] = useState([]);
+  const [dataServicios, setDataServicios] = useState([]);
+  const [dataModelos, setDataModelos] = useState([]);
 
   const optionsKey = useMemo(() => ({
     "Buscar por Serie": "serie",
@@ -47,27 +50,27 @@ const Home = () => {
     return response.json();
   }
 
-  function mapOptions(options, data, idKey, labelKey, defaultValue) {
+  function mapOptions(options, data, labelKey,) {
     const instOptMap = new Map();
     data.forEach(item => {
       instOptMap.set(item.id, item[labelKey]);
     });
 
     const mappedOptions = options.map(it => {
-      const itemName = instOptMap.get(it[idKey]);
+      const itemName = instOptMap.get(it[`${labelKey}_id`]);
       return {
         ...it,
-        [labelKey]: itemName || defaultValue,
+        [labelKey]: itemName || `${labelKey} no encontrado`,
       };
     });
 
     return mappedOptions;
   }
 
-  function createMap(data, idKey, labelKey) {
+  function createMap(data, labelKey) {
     const map = new Map();
     data.forEach(item => {
-      map.set(item[idKey], item[labelKey]);
+      map.set(item.id, item[labelKey]);
     });
     return map;
   }
@@ -76,102 +79,94 @@ const Home = () => {
 
     const fetchData = async () => {
       try {
-
         const [
-          dataMantenimientos,
-          dataInstituciones,
-          dataServicios,
-          dataModelos,
+          dataMants,
+          dataInsts,
+          dataServs,
+          dataMods,
         ] = await Promise.all([
           fetchDatos(urlMantos),
           fetchDatos("https://ssttapi.mibbraun.pe/instituciones"),
           fetchDatos("https://ssttapi.mibbraun.pe/servicios"),
           fetchDatos("https://ssttapi.mibbraun.pe/tipos"),
         ]);
+        setDataMantenimientos(dataMants)
+        setDataInstituciones(dataInsts)
+        setDataServicios(dataServs)
+        setDataModelos(dataMods)
 
-        let keyToMap;
-        if (searchLabel === "Buscar por Serie") {
-          keyToMap = "serie";
-        } else if (searchLabel === "Buscar por Institucion") {
-          keyToMap = "institucion_id";
-        } else if (searchLabel === "Buscar por Servicio") {
-          keyToMap = "servicio_id";
-        } else if (searchLabel === "Buscar por Fecha") {
-          keyToMap = "fecha_registro";
-        } else {
-          keyToMap = "modelo_id";
-        }
-
-        const options = Array.from(new Set(dataMantenimientos.map(item => item[keyToMap])))
-          .map(key => {
-            const item = dataMantenimientos.find(item => item[keyToMap] === key);
-            return {
-              id: item.id,
-              [keyToMap]: key
-            };
-          });
-
-
-        setOptionsAutocomplete(options)
-
-        if (searchLabel === "Buscar por Institucion") {
-          const optionsInstConNombres = mapOptions(options, dataInstituciones, 'institucion_id', 'institucion', 'Institución no encontrada');
-          setOptionsAutocomplete(optionsInstConNombres);
-        }
-
-        if (searchLabel === "Buscar por Servicio") {
-          const optionsServConNombres = mapOptions(options, dataServicios, 'servicio_id', 'servicio', 'Servicio no encontrado');
-          setOptionsAutocomplete(optionsServConNombres);
-        }
-
-        if (searchLabel === "Buscar por Modelo") {
-          const optionsModelsConNombres = mapOptions(options, dataModelos, 'modelo_id', 'modelo', 'Modelo no encontrado');
-          setOptionsAutocomplete(optionsModelsConNombres);
-        }
-
-
-        if (searchLabel === "Buscar por Fecha") {
-          let optionsFechas = [...options].reverse();
-          optionsFechas.forEach(objeto => {
-            objeto.fecha = formatDate(objeto.fecha_registro);
-          });
-          setOptionsAutocomplete(optionsFechas);
-        }
-        let dataFiltrada = [...dataMantenimientos]
-        if (searchLabel !== "" && searchTerm !== null) {
-          dataFiltrada = dataMantenimientos.filter(data => data[keyToMap] === searchTerm[keyToMap])
-        }
-
-
-        const institucionesMap = createMap(dataInstituciones, 'id', 'institucion');
-        const serviciosMap = createMap(dataServicios, 'id', 'servicio');
-        const modelosMap = createMap(dataModelos, 'id', 'modelo');
-
-        const dataConNombres = dataFiltrada.map(mantenimiento => {
-          const nombreInstitucion = institucionesMap.get(mantenimiento.institucion_id);
-          const nombreServicio = serviciosMap.get(mantenimiento.servicio_id);
-          const nombreModelo = modelosMap.get(mantenimiento.modelo_id);
-
-          return {
-            ...mantenimiento,
-            institucion: nombreInstitucion || 'Institución no encontrada',
-            servicio: nombreServicio || 'Servicio no encontrado',
-            modelo: nombreModelo || 'Modelo no encontrado'
-          };
-        });
-
-
-        // Mover la actualización de datos después de obtener los datos
-        setDatos(dataConNombres);
+        console.log('pidiendo datois')
         setDataLoaded(true)
+
+
       } catch (error) {
         console.error('Error al obtener y procesar los datos:', error);
       }
     };
 
-    // Eliminar datos de la dependencia
-    fetchData();
-  }, [searchLabel, optionsKey, searchTerm, urlMantos]);
+    if (!dataLoaded) {
+      fetchData();
+    }
+
+    if (dataMantenimientos.length>0) {
+      const options = Array.from(new Set(dataMantenimientos.map(item => item[optionsKey[searchLabel]])))
+        .map(key => {
+          const item = dataMantenimientos.find(item => item[optionsKey[searchLabel]] === key);
+          return {
+            id: item.id,
+            [optionsKey[searchLabel]]: key
+          };
+        });
+
+      let filteredOptions = options;
+
+      if (searchLabel === "Buscar por Institucion") {
+        filteredOptions = mapOptions(options, dataInstituciones, 'institucion');
+      } else if (searchLabel === "Buscar por Servicio") {
+        filteredOptions = mapOptions(options, dataServicios, 'servicio');
+      } else if (searchLabel === "Buscar por Modelo") {
+        filteredOptions = mapOptions(options, dataModelos, 'modelo');
+      } else {
+        filteredOptions = filteredOptions.map(objeto => {
+          const fechaFormateada = formatDate(objeto.fecha_registro);
+          return {
+            ...objeto,
+            fecha: fechaFormateada
+          };
+        }).reverse();
+      }
+
+      setOptionsAutocomplete(filteredOptions);
+
+
+      let dataFiltrada = (searchLabel !== "" && searchTerm !== null)
+        ? dataMantenimientos.filter(data => data[optionsKey[searchLabel]] === searchTerm[optionsKey[searchLabel]])
+        : [...dataMantenimientos];
+
+
+
+      const institucionesMap = createMap(dataInstituciones, 'institucion');
+      const serviciosMap = createMap(dataServicios, 'servicio');
+      const modelosMap = createMap(dataModelos, 'modelo');
+
+      const dataConNombres = dataFiltrada.map(mantenimiento => {
+        const nombreInstitucion = institucionesMap.get(mantenimiento.institucion_id);
+        const nombreServicio = serviciosMap.get(mantenimiento.servicio_id);
+        const nombreModelo = modelosMap.get(mantenimiento.modelo_id);
+
+        return {
+          ...mantenimiento,
+          institucion: nombreInstitucion || 'Institución no encontrada',
+          servicio: nombreServicio || 'Servicio no encontrado',
+          modelo: nombreModelo || 'Modelo no encontrado'
+        };
+      });
+
+      // Mover la actualización de datos después de obtener los datos
+      setDatos(dataConNombres);
+      setDataLoaded(true)
+    }
+  }, [searchLabel, optionsKey, searchTerm, urlMantos, dataLoaded, dataMantenimientos, dataInstituciones, dataServicios, dataModelos]);
 
 
   return (
@@ -233,7 +228,7 @@ const Home = () => {
           </Box>
 
           {
-            searchLabel !== "" && optionsAutocomplete !== null && (
+            searchLabel !== "" && optionsAutocomplete.length>0 && (
               <Box
                 display="flex"
                 padding=".5rem"
@@ -259,25 +254,10 @@ const Home = () => {
           }
           {
             (dataLoaded) ? (
-              datos.length > 0 ? (
-                isTreeView ? (
-                  <CustomizedTreeView data={[...datos].reverse()} viewAll={viewAll} />
-                ) : (
-                  <ListView data={[...datos].reverse()} setDatos={setDatos} viewAll={viewAll} />
-                )
+              isTreeView ? (
+                <CustomizedTreeView data={[...datos].reverse()} viewAll={viewAll} />
               ) : (
-                <Box
-                  display="flex"
-                  width="90%"
-                  alignItems="center"
-                  padding=".7rem"
-                  boxSizing="border-box"
-                  borderRadius=".5rem"
-                  backgroundColor={theme.palette.primary.back}
-                  marginTop=".7rem"
-                >
-                  <Typography variant="h6" style={{ textAlign: "center" }}>No tiene mantenimientos registrados, agregue uno</Typography>
-                </Box>
+                <ListView data={[...datos].reverse()} setDatos={setDatos} viewAll={viewAll} />
               )
             ) : (
               <Box sx={{
