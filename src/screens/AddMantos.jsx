@@ -75,11 +75,14 @@ const AddMantos = () => {
                 setRepuestosCambiados([repuestosData[repuestosData.length - 1].repuesto])
 
                 //seteamos los ultimos datos
-                const { modelo_id, institucion_id, servicio_id } = lastMaintenanceData[0];
+                const { modelo_id, institucion_id, servicio_id, fecha_registro } = lastMaintenanceData[0];
+                const fechaActual = formatDate(undefined, true)
 
-                setModelo(modelosData.find(m => m.id === modelo_id))
-                setInstitucion(institucionesData.find(i => i.id === institucion_id))
-                setServicio(serviciosData.find(s => s.id === servicio_id))
+                if(fechaActual=== fecha_registro.split("T")[0]) {
+                    setModelo(modelosData.find(m => m.id === modelo_id))
+                    setInstitucion(institucionesData.find(i => i.id === institucion_id))
+                    setServicio(serviciosData.find(s => s.id === servicio_id))
+                }
 
                 setDataLoaded(true);// Marca los datos como cargados
             })
