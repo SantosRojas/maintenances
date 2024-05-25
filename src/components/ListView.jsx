@@ -1,12 +1,14 @@
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography, Button, Checkbox } from '@mui/material';
 import { organizarDatosPorFecha } from '../utils/common';
 import { useTheme } from '@emotion/react';
 import { useState } from 'react';
 import MyItem from './MyItem';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 
 const ListView = ({ data, setDatos, ListView, viewAll }) => {
     const datosOrganizados = organizarDatosPorFecha(data)
+    const [showDoneIcon, setShowDoneIcon] = useState(false)
     let datosLimitados
     const [showMaintenanceStates, setShowMaintenanceStates] = useState(
         Object.keys(datosOrganizados).reduce((acc, key) => {
@@ -59,7 +61,14 @@ const ListView = ({ data, setDatos, ListView, viewAll }) => {
                         }}
                     >
                         <Box display="flex" justifyContent="space-around" alignItems="center">
-                            <Typography><strong>Fecha: </strong>{key}</Typography>
+                            <Typography><strong>{key}</strong></Typography>
+                            {
+                                showMaintenanceStates[key] && <Checkbox
+                                    onChange={() => setShowDoneIcon(prevState => !prevState)}
+                                    aria-label="show help"
+                                    icon={<VisibilityOff />}
+                                    checkedIcon={<Visibility />} />
+                            }
                             <Button
                                 size="small"
                                 variant='contained'
@@ -72,7 +81,7 @@ const ListView = ({ data, setDatos, ListView, viewAll }) => {
                         {
                             showMaintenanceStates[key] && (
                                 datosOrganizados[key].map((item, index) => (
-                                    <MyItem key={index} item={item} setDatos={setDatos} />
+                                    <MyItem key={index} item={item} setDatos={setDatos} showDoneIcon={showDoneIcon} />
                                 ))
                             )
                         }

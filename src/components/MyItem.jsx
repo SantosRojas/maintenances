@@ -12,15 +12,17 @@ import {
     ListItem,
     ListItemText,
     Icon,
+    Checkbox,
 } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import { useNavigate } from "react-router-dom";
 import HomeRepairServiceIcon from '@mui/icons-material/HomeRepairService';
+import { CheckCircle, CircleOutlined } from "@mui/icons-material";
 
 
-const MyItem = ({ item, setDatos }) => {
+const MyItem = ({ item, setDatos, showDoneIcon }) => {
     const [showDetails, setShowDetails] = useState(false)
     const theme = useTheme()
     const navigate = useNavigate()
@@ -28,6 +30,7 @@ const MyItem = ({ item, setDatos }) => {
     const [deleteMessage, setDeleteMessage] = useState(null);
     const [openDialogResult, setOpenDialogResult] = useState(false)
     const [exitoDelete, setExitoDelete] = useState(false)
+    const [checkedIcon, setCheckedIcon] = useState(false)
 
 
     const handleDelete = () => {
@@ -97,6 +100,14 @@ const MyItem = ({ item, setDatos }) => {
                     <Typography variant='p' sx={{ fontWeight: 'bold' }}>{item.serie}</Typography>
                     <Typography variant='p' sx={{ fontWeight: 'bold' }}>{item.qr}</Typography>
                     <Typography variant='p' sx={{ fontWeight: 'bold' }}>{item.modelo}</Typography>
+                    {showDoneIcon &&
+                        <Checkbox
+                            checked={checkedIcon}
+                            onChange={() => setCheckedIcon(prevState => !prevState)}
+                            aria-label="Done report"
+                            icon={<CircleOutlined />}
+                            checkedIcon={< CheckCircle />} />}
+
                     <IconButton color="primary" aria-label="add-mantos" onClick={(e) => setShowDetails(!showDetails)} title="Mostrar detalles">
                         {showDetails ? (
                             <ArrowDropUpIcon fontSize="large" />
@@ -113,25 +124,25 @@ const MyItem = ({ item, setDatos }) => {
                             {
                                 item.repuestos_cambiados !== "Ninguno" && (
                                     <Box>
-                                <Typography><strong>Repuestos Cambiados:</strong></Typography>
-                                <List>
-                                    {
-                                        item.repuestos_cambiados.split(',').map((rep, index) => (
-                                            <ListItem key={index} disablePadding>
-                                                <Box
-                                                    display="flex"
-                                                    gap="1rem">
-                                                    <Icon color="primary">
-                                                        <HomeRepairServiceIcon />
-                                                    </Icon>
-                                                    <ListItemText >{rep}</ListItemText>
-                                                </Box>
+                                        <Typography><strong>Repuestos Cambiados:</strong></Typography>
+                                        <List>
+                                            {
+                                                item.repuestos_cambiados.split(',').map((rep, index) => (
+                                                    <ListItem key={index} disablePadding>
+                                                        <Box
+                                                            display="flex"
+                                                            gap="1rem">
+                                                            <Icon color="primary">
+                                                                <HomeRepairServiceIcon />
+                                                            </Icon>
+                                                            <ListItemText >{rep}</ListItemText>
+                                                        </Box>
 
-                                            </ListItem>
-                                        ))
-                                    }
-                                </List>
-                            </Box>
+                                                    </ListItem>
+                                                ))
+                                            }
+                                        </List>
+                                    </Box>
                                 )
                             }
 
