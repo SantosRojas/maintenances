@@ -53,6 +53,7 @@ const AddMantos = () => {
     const [showForm, setShowForm] = useState(true)
     const [exito, setExito] = useState(true)
     const [warning, setWarning] = useState(false)
+    const [errorSerie, setErrorSerie] = useState(false)
 
     const navigate = useNavigate()
 
@@ -63,14 +64,23 @@ const AddMantos = () => {
             fetch("https://ssttapi.mibbraun.pe/instituciones").then((response) => response.json()),
             fetch("https://ssttapi.mibbraun.pe/servicios").then((response) => response.json()),
             fetch("https://ssttapi.mibbraun.pe/tipos").then((response) => response.json()),
-            fetch("https://ssttapi.mibbraun.pe/repuestos").then((response) => response.json())
+            fetch("https://ssttapi.mibbraun.pe/repuestos").then((response) => response.json()),
+            fetch("https://ssttapi.mibbraun.pe/lastmaintenace").then((response) => response.json())
         ])
-            .then(([institucionesData, serviciosData, modelosData, repuestosData]) => {
+            .then(([institucionesData, serviciosData, modelosData, repuestosData, lastMaintenanceData]) => {
                 setInstituciones(institucionesData);
                 setServicios(serviciosData);
                 setModelos(modelosData);
                 setRepuestos(repuestosData)
                 setRepuestosCambiados([repuestosData[repuestosData.length - 1].repuesto])
+
+                //seteamos los ultimos datos
+                const { modelo_id, institucion_id, servicio_id } = lastMaintenanceData[0];
+
+                setModelo(modelosData.find(m => m.id === modelo_id))
+                setInstitucion(institucionesData.find(i => i.id === institucion_id))
+                setServicio(serviciosData.find(s => s.id === servicio_id))
+
                 setDataLoaded(true);// Marca los datos como cargados
             })
             .catch((error) => console.error(error));
@@ -79,8 +89,8 @@ const AddMantos = () => {
 
     useEffect(() => {
         if (tipoMantenimiento && repuestos) {
-            const newRepuestosCambiados = tipoMantenimiento.tipo !== "Preventivo" 
-                ? [] 
+            const newRepuestosCambiados = tipoMantenimiento.tipo !== "Preventivo"
+                ? []
                 : [repuestos[0].repuesto];
             setRepuestosCambiados(newRepuestosCambiados);
         }
@@ -180,7 +190,7 @@ const AddMantos = () => {
                     alignItems="center"
                 >
                     <IconButton color="primary" aria-label="arrow-back" onClick={e => navigate("/home")}>
-                        <ArrowBackRoundedIcon fontSize="large"/>
+                        <ArrowBackRoundedIcon fontSize="large" />
                     </IconButton>
 
                     <Typography variant="h6" sx={{ fontWeight: "bold" }}>Nuevo Mantenimiento</Typography>
@@ -194,11 +204,17 @@ const AddMantos = () => {
                                     <form onSubmit={handleAddData} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
 
                                         <TextField
+                                            error={errorSerie}
                                             size="small"
                                             type="number"
                                             value={serie}
                                             label="Serie"
-                                            onChange={(e) => setSerie(e.target.value)}
+                                            helperText={errorSerie ? "Se aceptan 6 cifras como maximo " : ""}
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                setSerie(value);
+                                                setErrorSerie(value.length > 6)
+                                            }}
                                             required />
 
                                         <TextField
@@ -285,7 +301,11 @@ const AddMantos = () => {
 
                                         <TextField size="small" type="text" value={comentarios} label="Comentarios" onChange={(e) => setComentarios(e.target.value)} />
 
-                                        <Button type="submit" variant="contained" sx={{ fontWeight: "bold" }} >Agregar</Button>
+                                        <Button
+                                            type="submit"
+                                            variant="contained"
+                                            disabled ={errorSerie}
+                                            sx={{ fontWeight: "bold" }} >Agregar</Button>
 
                                         {loading && (
                                             <Modal
