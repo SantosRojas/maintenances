@@ -6,8 +6,9 @@ import ListadoRepuestos from "../components/ListadoRepuestos";
 import Exito from "../components/Exito";
 import Error from "../components/Error";
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
-import { useParams} from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { FormSkeleton } from "../components/skeleton";
+import MyInput from "../components/MyInput";
 
 const Edit = () => {
     const { id } = useParams();
@@ -24,6 +25,7 @@ const Edit = () => {
     const [date, setDate] = useState(formatDate());
     const [dataLoaded, setDataLoaded] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [errorSerie, setErrorSerie] = useState(false)
     // eslint-disable-next-line
     const [mantenimiento, setMantenimiento] = useState(null);
 
@@ -32,13 +34,13 @@ const Edit = () => {
     const [servicios, setServicios] = useState(null)
     const [modelos, setModelos] = useState(null)
     const [repuestos, setRepuestos] = useState(null);
-    
+
 
     const tipos = useMemo(() => [
         { id: 1, tipo: "Preventivo" },
         { id: 2, tipo: "Preventivo-Correctivo" },
         { id: 3, tipo: "Correctivo" }
-    ], []); 
+    ], []);
 
     const [showForm, setShowForm] = useState(true);
     const [exito, setExito] = useState(true);
@@ -66,25 +68,25 @@ const Edit = () => {
                 setInstitucion(institucionesData.find((inst) => inst.id === mantenimientoData[0].institucion_id));
                 setServicio(serviciosData.find((serv) => serv.id === mantenimientoData[0].servicio_id));
                 setComentarios(mantenimientoData[0].comentarios);
-                setDate(formatDate(mantenimientoData[0].fecha_registro,true));
+                setDate(formatDate(mantenimientoData[0].fecha_registro, true));
                 const repuestosResponse = mantenimientoData[0].repuestos_cambiados.split(', ')
                 setRepuestoCambiados(repuestosResponse)
-                setRepuestoCambiado(repuestosData.find((repuesto) => repuesto.repuesto===repuestosResponse[repuestosResponse.length-1]))
+                setRepuestoCambiado(repuestosData.find((repuesto) => repuesto.repuesto === repuestosResponse[repuestosResponse.length - 1]))
                 setDataLoaded(true);
             })
             .catch((error) => console.error(error));
-    }, [id,tipos]);
+    }, [id, tipos]);
 
-    
+
 
     const handleEditData = (e) => {
         e.preventDefault();
         setLoading(true);
 
         const dataToSend = {
-            "id":id,
-            "serie":serie,
-            "qr":qr,
+            "id": id,
+            "serie": serie,
+            "qr": qr,
             "modelo_id": modelo.id,
             "tipo_mantenimiento": tipoMantenimiento.tipo,
             "repuestos_cambiados": repuestosCambiados.join(', '),
@@ -156,21 +158,28 @@ const Edit = () => {
                                 (dataLoaded) ? (
                                     <form onSubmit={handleEditData} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
 
-                                        <TextField
-                                            size="small"
-                                            type="number"
+                                        <MyInput
+                                            label={"Serie"}
                                             value={serie}
-                                            label="Serie"
-                                            onChange={(e) => setSerie(e.target.value)}
-                                            required />
+                                            setValue={setSerie}
+                                            error={errorSerie}
+                                            setError={() => setErrorSerie(false)}
+                                            helperText={errorSerie ? "Se aceptan 6 cifras como maximo " : ""}
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                setSerie(value);
+                                                setErrorSerie(value.length > 6)
+                                            }}
 
-                                        <TextField
-                                            size="small"
-                                            type="number"
+                                        />
+
+                                        <MyInput
+                                            label={"Qr"}
                                             value={qr}
-                                            label="Qr"
+                                            setValue={setQr}
                                             onChange={(e) => setQr(e.target.value)}
-                                            required />
+                                        />
+
 
                                         <Autocomplete
                                             size="small"
@@ -240,7 +249,7 @@ const Edit = () => {
 
                                         <TextField size="small" type="text" value={comentarios} label="Comentarios" onChange={(e) => setComentarios(e.target.value)} />
 
-                                        <Button type="submit" variant="contained" sx={{ fontWeight: "bold" }} >Editar</Button>
+                                        <Button type="submit" variant="contained" sx={{ fontWeight: "bold" }} disabled={errorSerie} >Editar</Button>
 
                                         {loading && (
                                             <Modal
@@ -263,7 +272,7 @@ const Edit = () => {
                         </Box>
                     ) : (
                         exito ? (
-                            <Exito setShowForm={setShowForm} textAux="Seguir Editando"/>
+                            <Exito setShowForm={setShowForm} textAux="Seguir Editando" />
                         ) : (< Error setShowForm={setShowForm} />)
                     )
                 }

@@ -8,6 +8,7 @@ import Error from "../components/Error"
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import { FormSkeleton } from "../components/skeleton";
 import Warning from "../components/Warning";
+import MyInput from "../components/MyInput";
 
 const AddMantos = () => {
 
@@ -78,7 +79,7 @@ const AddMantos = () => {
                 const { modelo_id, institucion_id, servicio_id, fecha_registro } = lastMaintenanceData[0];
                 const fechaActual = formatDate(undefined, true)
 
-                if(fechaActual=== fecha_registro.split("T")[0]) {
+                if (fechaActual === fecha_registro.split("T")[0]) {
                     setModelo(modelosData.find(m => m.id === modelo_id))
                     setInstitucion(institucionesData.find(i => i.id === institucion_id))
                     setServicio(serviciosData.find(s => s.id === servicio_id))
@@ -205,28 +206,28 @@ const AddMantos = () => {
                             {
                                 (dataLoaded) ? (
                                     <form onSubmit={handleAddData} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-
-                                        <TextField
-                                            error={errorSerie}
-                                            size="small"
-                                            type="number"
+                                        <MyInput
+                                            label={"Serie"}
                                             value={serie}
-                                            label="Serie"
+                                            setValue={setSerie}
+                                            error={errorSerie}
+                                            setError={() => setErrorSerie(false)}
                                             helperText={errorSerie ? "Se aceptan 6 cifras como maximo " : ""}
                                             onChange={(e) => {
                                                 const value = e.target.value;
                                                 setSerie(value);
                                                 setErrorSerie(value.length > 6)
                                             }}
-                                            required />
 
-                                        <TextField
-                                            size="small"
-                                            type="number"
+                                        />
+
+                                        <MyInput
+                                            label={"Qr"}
                                             value={qr}
-                                            label="Qr"
+                                            setValue={setQr}
                                             onChange={(e) => setQr(e.target.value)}
-                                            required />
+                                        />
+
 
                                         <Autocomplete
                                             size="small"
@@ -307,7 +308,7 @@ const AddMantos = () => {
                                         <Button
                                             type="submit"
                                             variant="contained"
-                                            disabled ={errorSerie}
+                                            disabled={errorSerie}
                                             sx={{ fontWeight: "bold" }} >Agregar</Button>
 
                                         {loading && (
