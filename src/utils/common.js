@@ -59,17 +59,18 @@ export const organizarJerarquia = (lista) => {
 
 
 export const handleDownloadExcel = async (data, filename = 'Mantenimientos') => {
+  const dataReducida = data.map(seleccionarCampos)
   try {
     // Crea un nuevo libro de Excel
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Data');
 
     // Definir las cabeceras
-    const headers = Object.keys(data[0]);
+    const headers = Object.keys(dataReducida[0]);
     worksheet.addRow(headers);
 
     // Agregar datos
-    data.forEach(obj => {
+    dataReducida.forEach(obj => {
       const row = [];
       headers.forEach(header => {
         row.push(obj[header]);
@@ -93,3 +94,18 @@ export const handleDownloadExcel = async (data, filename = 'Mantenimientos') => 
   }
 };
 
+const seleccionarCampos = (objeto) => {
+  return {
+    serie: objeto.serie,
+    qr: objeto.qr,
+    modelo: objeto.modelo,
+    tipo_mantenimiento: objeto.tipo_mantenimiento,
+    repuestos_cambiados: objeto.repuestos_cambiados,
+    institucion: objeto.institucion,
+    servicio: objeto.servicio,
+    fecha_registro: objeto.fecha_registro,
+    fecha_actualizacion: objeto.fecha_actualizacion,
+    comentarios: objeto.comentarios
+
+  };
+};
