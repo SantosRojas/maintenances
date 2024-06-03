@@ -324,7 +324,6 @@ const Home = () => {
                   padding=".7rem"
                   boxSizing="border-box"
                   borderRadius=".5rem"
-                  backgroundColor={theme.palette.primary.back}
                   marginTop=".7rem"
                 >
                   <Typography variant="h6" style={{ textAlign: "center" }}>No tiene mantenimientos registrados, agregue uno</Typography>

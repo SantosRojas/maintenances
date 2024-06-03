@@ -74,7 +74,7 @@ const CustomizedTreeView = ({ data, viewAll }) => {
                 margin=".5rem 0"
                 paddingRight="0.5rem "
                 style={{
-                  borderRight: '.5rem solid ' + (objeto.tipo_mantenimiento !== "Preventivo" ? '#4A235A' : '#9B59B6')
+                  borderRight: '.5rem solid ' + (objeto.tipo_mantenimiento !== "Preventivo" ? 'red' : 'green')
                 }}
                 title="Mostrar detalles">
                 <Typography variant="p">

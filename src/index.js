@@ -4,18 +4,14 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { createTheme } from '@mui/material/styles';
-import { green, purple } from '@mui/material/colors';
 import { ThemeProvider } from '@emotion/react';
-
+import CssBaseline from '@mui/material/CssBaseline';
 const theme = createTheme({
+  
   palette: {
+    mode:"dark",
     primary: {
-      main: purple[700],
-      secondary:purple[100],
-      back:purple[200]
-    },
-    secondary: {
-      main: green[500],
+      main: '#E3D026'
     }
   },
 });
@@ -25,6 +21,7 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
+    <CssBaseline />
       <App />
     </ThemeProvider>
   </React.StrictMode>

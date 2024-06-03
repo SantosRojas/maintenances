@@ -123,7 +123,6 @@ const EditComponentItem = ({ dato, llave,setDatos }) => {
             flexDirection="column"
             gap="1rem"
             sx={{
-                backgroundColor: theme.palette.primary.back,
                 padding: '0.5rem',
                 borderRadius: '4px',
                 width: '100%',

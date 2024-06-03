@@ -35,7 +35,7 @@ export default function MiMenu({ setSearchLabel }) {
   return (
     <div>
       <IconButton
-        color="primary"
+        color='primary'
         aria-label="more"
         id="long-button"
         aria-controls={open ? 'long-menu' : undefined}

@@ -20,6 +20,8 @@ import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import { useNavigate } from "react-router-dom";
 import HomeRepairServiceIcon from '@mui/icons-material/HomeRepairService';
 import { CheckCircle, CircleOutlined } from "@mui/icons-material";
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 
 
 const MyItem = ({ item, setDatos, showDoneIcon }) => {
@@ -81,13 +83,12 @@ const MyItem = ({ item, setDatos, showDoneIcon }) => {
                 display="flex"
                 flexDirection="column"
                 sx={{
-                    backgroundColor: theme.palette.primary.back,
+                    border: '1px solid ' + theme.palette.primary.main,
                     gap: '1rem',
                     padding: '0.5rem',
                     borderRadius: '4px',
                     width: '100%',
-                    boxSizing: 'border-box',
-                    borderLeft: '.5rem solid ' + (item.tipo_mantenimiento !== "Preventivo" ? '#4A235A' : '#9B59B6')
+                    boxSizing: 'border-box'
                 }}
             >
                 <Box
@@ -108,9 +109,9 @@ const MyItem = ({ item, setDatos, showDoneIcon }) => {
                             icon={<CircleOutlined />}
                             checkedIcon={< CheckCircle />} />}
 
-                    <IconButton color="primary" aria-label="add-mantos" onClick={(e) => setShowDetails(!showDetails)} title="Mostrar detalles">
+                    <IconButton color={item.tipo_mantenimiento !== "Preventivo" ? 'error' : 'info'} aria-label="add-mantos" onClick={(e) => setShowDetails(!showDetails)} title="Mostrar detalles">
                         {showDetails ? (
-                            <ArrowDropUpIcon fontSize="large" />
+                            <ArrowDropUpIcon  fontSize="large" />
                         ) : (
                             <ArrowDropDownIcon fontSize="large" />
                         )}
@@ -154,8 +155,8 @@ const MyItem = ({ item, setDatos, showDoneIcon }) => {
                                 display="flex"
                                 justifyContent="space-between"
                                 alignItems="center">
-                                <Button variant="contained" onClick={(e) => navigate(`/edit/${item.id}`)}>Editar</Button>
-                                <Button variant="contained" color="error" onClick={(e) => handleDelete()}>Eliminar</Button>
+                                <Button variant="contained" onClick={(e) => navigate(`/edit/${item.id}`)} startIcon={<EditIcon/>} >Editar</Button>
+                                <Button variant="contained" color="error" onClick={(e) => handleDelete()} startIcon={<DeleteIcon />}>Eliminar</Button>
                             </Box>
                         </>
                     )

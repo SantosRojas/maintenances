@@ -89,6 +89,7 @@ const Login = () => {
                             endAdornment: (
                                 <InputAdornment position="end">
                                     <IconButton
+                                        color="primary"
                                         aria-label="toggle password visibility"
                                         onClick={toggleShowPassword}
                                     >

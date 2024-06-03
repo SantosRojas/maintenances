@@ -15,6 +15,7 @@ import { formatDate, handleDownloadExcel } from "../utils/common";
 import SearchOffIcon from '@mui/icons-material/SearchOff';
 import AddSi from "../components/AddSi";
 
+
 const Home = () => {
   const [datos, setDatos] = useState([])
   const navigate = useNavigate()
@@ -31,6 +32,7 @@ const Home = () => {
   const [dataInstituciones, setDataInstituciones] = useState([]);
   const [dataServicios, setDataServicios] = useState([]);
   const [dataModelos, setDataModelos] = useState([]);
+
 
   const optionsKey = useMemo(() => ({
     "Buscar por Serie": "serie",
@@ -188,6 +190,7 @@ const Home = () => {
           justifyContent="center"
           alignItems="center"
           paddingBottom="1rem"
+          
         >
           <Box display="flex"
             justifyContent="center"

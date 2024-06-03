@@ -51,7 +51,6 @@ const ListView = ({ data, setDatos, ListView, viewAll }) => {
                         display="flex"
                         flexDirection="column"
                         sx={{
-                            backgroundColor: theme.palette.primary.secondary,
                             gap: '1rem',
                             padding: '0.5rem',
                             borderRadius: '4px',
@@ -66,8 +65,8 @@ const ListView = ({ data, setDatos, ListView, viewAll }) => {
                                 showMaintenanceStates[key] && <Checkbox
                                     onChange={() => setShowDoneIcon(prevState => !prevState)}
                                     aria-label="show help"
-                                    icon={<VisibilityOff />}
-                                    checkedIcon={<Visibility />} />
+                                    icon={<VisibilityOff color='primary' fontSize="large"/>}
+                                    checkedIcon={<Visibility fontSize="large"/>} />
                             }
                             <Button
                                 size="small"
