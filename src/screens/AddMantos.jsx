@@ -59,14 +59,13 @@ const AddMantos = () => {
     const navigate = useNavigate()
 
     useEffect(() => {
-
         // Realiza las solicitudes de datos una vez cuando el componente se monta
         Promise.all([
             fetch("https://ssttapi.mibbraun.pe/instituciones").then((response) => response.json()),
             fetch("https://ssttapi.mibbraun.pe/servicios").then((response) => response.json()),
             fetch("https://ssttapi.mibbraun.pe/tipos").then((response) => response.json()),
             fetch("https://ssttapi.mibbraun.pe/repuestos").then((response) => response.json()),
-            fetch("https://ssttapi.mibbraun.pe/lastmaintenace").then((response) => response.json())
+            fetch(`https://ssttapi.mibbraun.pe/lastmaintenace/${currentUser.id}`).then((response) => response.json())
         ])
             .then(([institucionesData, serviciosData, modelosData, repuestosData, lastMaintenanceData]) => {
                 setInstituciones(institucionesData);
@@ -75,20 +74,22 @@ const AddMantos = () => {
                 setRepuestos(repuestosData)
                 setRepuestosCambiados([repuestosData[repuestosData.length - 1].repuesto])
 
-                //seteamos los ultimos datos
-                const { modelo_id, institucion_id, servicio_id, fecha_registro } = lastMaintenanceData[0];
-                const fechaActual = formatDate(undefined, true)
+                if (lastMaintenanceData.length !== 0) {
+                    //seteamos los ultimos datos
+                    const { modelo_id, institucion_id, servicio_id, fecha_registro } = lastMaintenanceData[0];
+                    const fechaActual = formatDate(undefined, true)
 
-                if (fechaActual === fecha_registro.split("T")[0]) {
-                    setModelo(modelosData.find(m => m.id === modelo_id))
-                    setInstitucion(institucionesData.find(i => i.id === institucion_id))
-                    setServicio(serviciosData.find(s => s.id === servicio_id))
+                    if (fechaActual === fecha_registro.split("T")[0]) {
+                        setModelo(modelosData.find(m => m.id === modelo_id))
+                        setInstitucion(institucionesData.find(i => i.id === institucion_id))
+                        setServicio(serviciosData.find(s => s.id === servicio_id))
+                    }
                 }
 
                 setDataLoaded(true);// Marca los datos como cargados
             })
             .catch((error) => console.error(error));
-    }, []);
+    }, [currentUser.id]);
 
 
     useEffect(() => {
