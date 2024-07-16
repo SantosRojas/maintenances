@@ -1,13 +1,13 @@
 import { Box, Typography, Button, Checkbox } from '@mui/material';
-import { organizarDatosPorFecha } from '../utils/common';
 import { useTheme } from '@emotion/react';
 import { useState } from 'react';
 import MyItem from './MyItem';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { organizarDatosPorCategoria } from '../utils/common';
 
 
-const ListView = ({ data, setDatos, ListView, viewAll }) => {
-    const datosOrganizados = organizarDatosPorFecha(data)
+const ListView = ({ data, setDatos, viewAll, categoria }) => {
+    const datosOrganizados = organizarDatosPorCategoria(data,categoria)
     const [showDoneIcon, setShowDoneIcon] = useState(false)
     let datosLimitados
     const [showMaintenanceStates, setShowMaintenanceStates] = useState(
@@ -59,7 +59,7 @@ const ListView = ({ data, setDatos, ListView, viewAll }) => {
                             border: '1px solid ' + theme.palette.primary.main,
                         }}
                     >
-                        <Box display="flex" justifyContent="space-around" alignItems="center">
+                        <Box display="flex" justifyContent="space-between" alignItems="center">
                             <Typography><strong>{key}</strong></Typography>
                             {
                                 showMaintenanceStates[key] && <Checkbox

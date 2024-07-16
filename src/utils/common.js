@@ -15,19 +15,6 @@ export function formatDate(dateString, firstYear = false, separator = '-') {
 }
 
 
-export const organizarDatosPorFecha = (datos) => {
-  const dataSortByDate = datos.sort((a, b) => new Date(b.fecha_registro) - new Date(a.fecha_registro));
-  const datosOrganizados = dataSortByDate.reduce((obj, manto) => {
-    const fechaRegistro = formatDate(manto.fecha_registro);
-    obj[fechaRegistro] = obj[fechaRegistro] || [];
-    obj[fechaRegistro].push(manto);
-    return obj;
-  }, {});
-
-  return datosOrganizados;
-};
-
-
 export const organizarJerarquia = (lista) => {
   const resultado = {};
 
@@ -109,3 +96,47 @@ const seleccionarCampos = (objeto) => {
 
   };
 };
+
+
+export const initialOptions = (options, value) => {
+  return options.reduce((acc, option) => {
+      acc[option.key] = value;
+      return acc;
+  }, {});
+
+}
+
+export function getUniqueFields(arr, field) {
+  return [...new Set(arr.map(obj => obj[field]))];
+}
+
+export function assignIds(arr, field) {
+  return arr.map((element, index) => ({
+      id: index + 1,
+      [field]: element
+  }));
+}
+
+
+export const organizarDatosPorCategoria = (datos, category) => {
+  const dataSortByDate = datos.sort((a, b) => new Date(b.fecha_registro) - new Date(a.fecha_registro));
+  const datosOrganizados = dataSortByDate.reduce((obj, manto) => {
+      let categoryValue = manto[category]
+      if (category === "fecha_registro") {
+          categoryValue = formatDate(manto[category])
+      }
+      obj[categoryValue] = obj[categoryValue] || [];
+      obj[categoryValue].push(manto);
+      return obj;
+  }, {});
+
+  return datosOrganizados;
+};
+
+export async function fetchDatos(url) {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Hubo un problema con la petición Fetch de ${url}: ${response.status}`);
+  }
+  return response.json();
+}
