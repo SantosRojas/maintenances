@@ -148,6 +148,8 @@ const MyItem = ({ item, setDatos, showDoneIcon }) => {
                             }
 
                             <Typography> <strong>Mantenimiento:</strong> {item.tipo_mantenimiento}</Typography>
+                            <Typography> <strong>Version de software:</strong> {item.software_version}</Typography>
+                            <Typography> <strong>Horas de trabajo:</strong> {item.work_hours}</Typography>
                             {item.comentarios !== "" && (
                                 <Typography><strong>Comentarios:</strong> {item.comentarios}</Typography>
                             )}

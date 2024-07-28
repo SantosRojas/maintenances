@@ -388,7 +388,7 @@ const AddMantos = () => {
                                             renderInput={(params) => <TextField {...params} label="Version de software" fullWidth required />}
                                         />
 
-                                        <TextField size="small" type="text" value={workHours} label="Horas de trabajo" onChange={(e) => setWorkHours(e.target.value)} />
+                                        <TextField size="small" type="text" value={workHours} label="Horas de trabajo" onChange={(e) => setWorkHours(e.target.value)} required />
 
 
                                         <TextField size="small" type="date" value={date} label="Fecha" onChange={(e) => setDate(e.target.value)} required />

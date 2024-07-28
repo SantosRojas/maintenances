@@ -22,6 +22,8 @@ const Edit = () => {
     const [institucion, setInstitucion] = useState(null);
     const [servicio, setServicio] = useState(null);
     const [comentarios, setComentarios] = useState("");
+    const [softwareVersion, setSoftwareVersion] = useState(null)
+    const [workHours,setWorkHours] = useState("")
     const [date, setDate] = useState(formatDate());
     const [dataLoaded, setDataLoaded] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -34,6 +36,7 @@ const Edit = () => {
     const [servicios, setServicios] = useState(null)
     const [modelos, setModelos] = useState(null)
     const [repuestos, setRepuestos] = useState(null);
+    const [softwareVersions,setSoftwareVersions] = useState([])
 
 
     const tipos = useMemo(() => [
@@ -53,9 +56,10 @@ const Edit = () => {
             fetch("https://ssttapi.mibbraun.pe/servicios").then((response) => response.json()),
             fetch("https://ssttapi.mibbraun.pe/tipos").then((response) => response.json()),
             fetch("https://ssttapi.mibbraun.pe/repuestos").then((response) => response.json()),
-            fetch(`https://ssttapi.mibbraun.pe/mantenimientos/${id}`).then((response) => response.json())
+            fetch(`https://ssttapi.mibbraun.pe/mantenimientos/${id}`).then((response) => response.json()),
+            fetch("https://ssttapi.mibbraun.pe/softwareversion").then((response) => response.json())
         ])
-            .then(([institucionesData, serviciosData, modelosData, repuestosData, mantenimientoData]) => {
+            .then(([institucionesData, serviciosData, modelosData, repuestosData, mantenimientoData, softwareVersionsData]) => {
                 setInstituciones(institucionesData);
                 setServicios(serviciosData);
                 setModelos(modelosData);
@@ -67,6 +71,9 @@ const Edit = () => {
                 setTipoMantenimiento(tipos.find((tipo) => tipo.tipo === mantenimientoData[0].tipo_mantenimiento));
                 setInstitucion(institucionesData.find((inst) => inst.id === mantenimientoData[0].institucion_id));
                 setServicio(serviciosData.find((serv) => serv.id === mantenimientoData[0].servicio_id));
+                setSoftwareVersions(softwareVersionsData)
+                setSoftwareVersion(softwareVersionsData.find((soft) => soft.software_version === mantenimientoData[0].software_version));
+                setWorkHours(mantenimientoData[0].work_hours);
                 setComentarios(mantenimientoData[0].comentarios);
                 setDate(formatDate(mantenimientoData[0].fecha_registro, true));
                 const repuestosResponse = mantenimientoData[0].repuestos_cambiados.split(', ')
@@ -93,7 +100,9 @@ const Edit = () => {
             "institucion_id": institucion.id,
             "servicio_id": servicio.id,
             "comentarios": comentarios,
-            "fecha_registro": date
+            "fecha_registro": date,
+            "software_version": softwareVersion.software_version,
+            "work_hours": workHours.work_hours
         };
 
         fetch(`https://ssttapi.mibbraun.pe/mantenimientos/${id}`, {
@@ -244,6 +253,18 @@ const Edit = () => {
                                             renderInput={(params) => <TextField {...params} label="Servicio" fullWidth required />}
                                         />
 
+                                        <Autocomplete
+                                            id="software"
+                                            size="small"
+                                            options={softwareVersions}
+                                            getOptionLabel={(option) => option.software_version}
+                                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                                            value={softwareVersion}
+                                            onChange={(_, value) => setSoftwareVersion(value)}
+                                            renderInput={(params) => <TextField {...params} label="Version de software" fullWidth required />}
+                                        />
+                                        
+                                        <TextField size="small" type="text" value={workHours} label="Horas de trabajo" onChange={(e) => setComentarios(e.target.value)} />
 
                                         <TextField size="small" type="date" value={date} label="Fecha" onChange={(e) => setDate(e.target.value)} required />
 
