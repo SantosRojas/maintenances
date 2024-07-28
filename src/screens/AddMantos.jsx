@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom";
 import { Container, Paper, Autocomplete, Box, Button, CircularProgress, Modal, TextField, Typography, IconButton } from "@mui/material"
-import { formatDate } from "../utils/common"
+import { formatDate, handleAddComponent } from "../utils/common"
 import ListadoRepuestos from "../components/ListadoRepuestos"
 import Exito from "../components/Exito"
 import Error from "../components/Error"
@@ -38,6 +38,12 @@ const AddMantos = () => {
     const [servicio, setServicio] = useState(null)
     const [comentarios, setComentarios] = useState("")
     const [date, setDate] = useState(formatDate(undefined, true))
+    const [softwareVersion, setSoftwareVersion] = useState(null)
+    const [workHours,setWorkHours] = useState("")
+
+    const [servicioInput, setServicioInput] = useState("")
+    const [institucionIput, setInstitucionInput] = useState("")
+    const [softwareVersionInput, setSoftwareVersionInput] = useState("")
 
 
     //VARIABLES EL FETCH
@@ -45,6 +51,7 @@ const AddMantos = () => {
     const [servicios, setServicios] = useState(null)
     const [modelos, setModelos] = useState(null)
     const [repuestos, setRepuestos] = useState(null);
+    const [softwareVersions,setSoftwareVersions] = useState([])
     const [dataLoaded, setDataLoaded] = useState(false); // Nuevo estado para controlar la carga de datos
     const [loading, setLoading] = useState(false);
     const objetCurrentUser = localStorage.getItem("currentUser");
@@ -58,6 +65,7 @@ const AddMantos = () => {
 
     const navigate = useNavigate()
 
+    // Pedir datos al servidor
     useEffect(() => {
         // Realiza las solicitudes de datos una vez cuando el componente se monta
         Promise.all([
@@ -65,14 +73,18 @@ const AddMantos = () => {
             fetch("https://ssttapi.mibbraun.pe/servicios").then((response) => response.json()),
             fetch("https://ssttapi.mibbraun.pe/tipos").then((response) => response.json()),
             fetch("https://ssttapi.mibbraun.pe/repuestos").then((response) => response.json()),
-            fetch(`https://ssttapi.mibbraun.pe/lastmaintenace/${currentUser.id}`).then((response) => response.json())
+            fetch(`https://ssttapi.mibbraun.pe/lastmaintenace/${currentUser.id}`).then((response) => response.json()),
+            fetch("https://ssttapi.mibbraun.pe/softwareversion").then((response) => response.json())
+
         ])
-            .then(([institucionesData, serviciosData, modelosData, repuestosData, lastMaintenanceData]) => {
+            .then(([institucionesData, serviciosData, modelosData, repuestosData, lastMaintenanceData, softwareVersionsData]) => {
                 setInstituciones(institucionesData);
                 setServicios(serviciosData);
                 setModelos(modelosData);
                 setRepuestos(repuestosData)
                 setRepuestosCambiados([repuestosData[repuestosData.length - 1].repuesto])
+                setSoftwareVersions(softwareVersionsData)
+                setSoftwareVersion(softwareVersionsData[0])
 
                 if (lastMaintenanceData.length !== 0) {
                     //seteamos los ultimos datos
@@ -101,6 +113,7 @@ const AddMantos = () => {
         }
     }, [tipoMantenimiento, repuestos]);
 
+
     const sendData = (dataToSend) => {
         fetch("https://ssttapi.mibbraun.pe/mantenimientos", {
             method: "POST",
@@ -121,7 +134,6 @@ const AddMantos = () => {
             .then(data => {
                 setLoading(false);
                 setShowForm(false);
-                console.log(data);
             })
             .catch(err => {
                 console.log(err);
@@ -129,28 +141,85 @@ const AddMantos = () => {
                 setExito(false); // Puedes configurar esto según tus necesidades
             });
 
-        console.log("agreganddo data")
     }
+
 
     const handleAddData = async (e) => {
         e.preventDefault();
-        setLoading(true);
-        const dataToSend = {
-            "serie": serie,
-            "qr": qr,
-            "modelo_id": modelo.id,
-            "tipo_mantenimiento": tipoMantenimiento.tipo,
-            "repuestos_cambiados": repuestosCambiados.join(', '),
-            "institucion_id": institucion.id,
-            "servicio_id": servicio.id,
-            "responsable_id": currentUser.id,
-            "comentarios": comentarios,
-            "fecha_registro": date
-        };
 
-        console.log(dataToSend);
+        setLoading(true);
 
         try {
+            let newInstitucion = institucion
+            let newServicio = servicio
+            let newSoftwareVersion = softwareVersion
+
+            const isDiferentInst = institucion ? institucionIput !== institucion.institucion : true
+            const isDiferentServ = servicio ? servicioInput !== servicio.servicio : true
+            const isDiferentSoft = softwareVersion ? softwareVersionInput !== softwareVersion.software_version : true
+
+
+            if (isDiferentInst) {
+                newInstitucion = instituciones.find(inst => inst.institucion === institucionIput.trim().toUpperCase())
+
+                if (newInstitucion) {
+                    setInstitucion(newInstitucion)
+                } else {
+                    console.log("Agregando nueva institucion")
+                    newInstitucion = await handleAddComponent({ institucion: institucionIput.trim().toUpperCase() })
+                    setInstitucion(newInstitucion)
+                    setInstituciones(prevState => [...prevState, newInstitucion])
+
+                }
+
+            }
+
+            if (isDiferentServ) {
+                newServicio = servicios.find(serv => serv.servicio === servicioInput.trim())
+                if (newServicio) {
+                    setServicio(newServicio)
+
+                } else {
+                    console.log("Agregado nuevo servicio")
+                    newServicio = await handleAddComponent({ servicio: servicioInput.trim() })
+                    setServicio(newServicio)
+                    setServicios(prevState => [...prevState, newServicio])
+
+                }
+            }
+
+            if (isDiferentSoft) {
+                newSoftwareVersion = softwareVersions.find(soft => soft.software_version === softwareVersionInput.trim())
+                if (newSoftwareVersion) {
+                    setSoftwareVersion(newSoftwareVersion)
+
+                } else {
+                    console.log("Agregado nuevo softwareversion")
+                    newSoftwareVersion = await handleAddComponent({ software_version: softwareVersionInput.trim() })
+                    setSoftwareVersion(newSoftwareVersion)
+                    setSoftwareVersions(prevState => [...prevState, newSoftwareVersion])
+
+                }
+            }
+
+
+
+            const dataToSend = {
+                "serie": serie,
+                "qr": qr,
+                "modelo_id": modelo.id,
+                "tipo_mantenimiento": tipoMantenimiento.tipo,
+                "repuestos_cambiados": repuestosCambiados.join(', '),
+                "institucion_id": newInstitucion.id,
+                "servicio_id": newServicio.id,
+                "responsable_id": currentUser.id,
+                "comentarios": comentarios,
+                "fecha_registro": date,
+                "software_version":newSoftwareVersion.software_version,
+                "work_hours": workHours
+            };
+            console.log(dataToSend);
+
             const response = await fetch("https://ssttapi.mibbraun.pe/mantenimientos");
             const data = await response.json();
 
@@ -280,26 +349,46 @@ const AddMantos = () => {
 
 
                                         <Autocomplete
+                                            freeSolo
                                             id="institucion"
                                             size="small"
                                             options={instituciones}
-                                            getOptionLabel={(option) => option.institucion}
+                                            getOptionLabel={(option) => option.institucion || ""}
                                             isOptionEqualToValue={(option, value) => option.id === value.id}
+                                            onInputChange={(_, value) => setInstitucionInput(value)}
                                             value={institucion}
-                                            onChange={(_, value) => setInstitucion(value)}
+                                            onChange={(_, value) => value ? setInstitucion(value) : setInstitucion(null)}
                                             renderInput={(params) => <TextField {...params} label="Institucion" fullWidth required />}
                                         />
 
                                         <Autocomplete
+                                            freeSolo
                                             id="servicios"
                                             size="small"
                                             options={servicios}
-                                            getOptionLabel={(option) => option.servicio}
+                                            getOptionLabel={(option) => option.servicio || ""}
                                             isOptionEqualToValue={(option, value) => option.id === value.id}
                                             value={servicio}
-                                            onChange={(_, value) => setServicio(value)}
+                                            onInputChange={(_, value) => setServicioInput(value)}
+                                            onChange={(_, value) => value ? setServicio(value) : setServicio(null)}
                                             renderInput={(params) => <TextField {...params} label="Servicio" fullWidth required />}
                                         />
+
+
+                                        <Autocomplete
+                                            freeSolo
+                                            id="software"
+                                            size="small"
+                                            options={softwareVersions}
+                                            getOptionLabel={(option) => option.software_version || ""}
+                                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                                            value={softwareVersion}
+                                            onInputChange={(_, value) => setSoftwareVersionInput(value)}
+                                            onChange={(_, value) => value ? setSoftwareVersion(value) : setSoftwareVersion(null)}
+                                            renderInput={(params) => <TextField {...params} label="Version de software" fullWidth required />}
+                                        />
+
+                                        <TextField size="small" type="text" value={workHours} label="Horas de trabajo" onChange={(e) => setWorkHours(e.target.value)} />
 
 
                                         <TextField size="small" type="date" value={date} label="Fecha" onChange={(e) => setDate(e.target.value)} required />

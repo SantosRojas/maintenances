@@ -100,8 +100,8 @@ const seleccionarCampos = (objeto) => {
 
 export const initialOptions = (options, value) => {
   return options.reduce((acc, option) => {
-      acc[option.key] = value;
-      return acc;
+    acc[option.key] = value;
+    return acc;
   }, {});
 
 }
@@ -112,8 +112,8 @@ export function getUniqueFields(arr, field) {
 
 export function assignIds(arr, field) {
   return arr.map((element, index) => ({
-      id: index + 1,
-      [field]: element
+    id: index + 1,
+    [field]: element
   }));
 }
 
@@ -121,13 +121,13 @@ export function assignIds(arr, field) {
 export const organizarDatosPorCategoria = (datos, category) => {
   const dataSortByDate = datos.sort((a, b) => new Date(b.fecha_registro) - new Date(a.fecha_registro));
   const datosOrganizados = dataSortByDate.reduce((obj, manto) => {
-      let categoryValue = manto[category]
-      if (category === "fecha_registro") {
-          categoryValue = formatDate(manto[category])
-      }
-      obj[categoryValue] = obj[categoryValue] || [];
-      obj[categoryValue].push(manto);
-      return obj;
+    let categoryValue = manto[category]
+    if (category === "fecha_registro") {
+      categoryValue = formatDate(manto[category])
+    }
+    obj[categoryValue] = obj[categoryValue] || [];
+    obj[categoryValue].push(manto);
+    return obj;
   }, {});
 
   return datosOrganizados;
@@ -140,3 +140,46 @@ export async function fetchDatos(url) {
   }
   return response.json();
 }
+
+
+export const handleAddComponent = async (component) => {
+  let ruta = ""
+  let key = Object.keys(component)[0];
+
+  switch (key) {
+    case "institucion":
+      ruta = "instituciones";
+      break;
+
+    case "servicio":
+      ruta = "servicios";
+      break;
+    default:
+      ruta = "softwareversion";
+      break;
+  }
+
+
+  try {
+    const response = await fetch(`https://ssttapi.mibbraun.pe/${ruta}`, {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(component)
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const serverResponse = await response.json();
+    const newComponentAdded = { id: serverResponse.insertId, ...component };
+    return newComponentAdded;
+
+  } catch (err) {
+    console.error('Error:', err); // Puedes configurar esto según tus necesidades
+    throw err;
+  }
+};
