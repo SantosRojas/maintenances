@@ -6,8 +6,8 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useNavigate } from 'react-router-dom';
 
 const options = [
-  "Agregar Servicio",
-  "Agregar Institucion",
+  "Editar Servicio",
+  "Editar Institucion",
   "Agregar Repuesto",
   "Cerrar Session"
 ];
@@ -30,10 +30,10 @@ export default function AddSi() {
 
   const handleSelectedOption = (optionSelected) => {
     if(optionSelected === options[0]){
-      navigate("/addc/servicio")
+      navigate("/editc/servicio")
     }
     else if(optionSelected === options[1]){
-      navigate("/addc/institucion")
+      navigate("/editc/institucion")
     }
     else if(optionSelected === options[2]){
       navigate("/addc/repuesto")

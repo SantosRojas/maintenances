@@ -29,9 +29,9 @@ const Home = () => {
   const navigate = useNavigate();
 
   const objetCurrentUser = useMemo(() => JSON.parse(localStorage.getItem("currentUser")), []);
-  // const [dataInstituciones, setDataInstituciones] = useState([]);
-  // const [dataServicios, setDataServicios] = useState([]);
-  // const [dataModelos, setDataModelos] = useState([]);
+  const [instituciones, setInstituciones] = useState(null)
+  const [servicios, setServicios] = useState(null)
+  const [modelos, setModelos] = useState(null)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,6 +42,10 @@ const Home = () => {
           fetchDatos("https://ssttapi.mibbraun.pe/servicios"),
           fetchDatos("https://ssttapi.mibbraun.pe/tipos"),
         ]);
+
+        setInstituciones(dataInsts)
+        setServicios(dataServs)
+        setModelos(dataMods)
 
         const dataMantsWname = dataMants.map(dato => ({
           ...dato,
@@ -114,10 +118,10 @@ const Home = () => {
   };
 
   const categoryCount = useMemo(() => {
-    const datosOrg = organizarDatosPorCategoria(dataMantenimientosFiltered,categoria)
+    const datosOrg = organizarDatosPorCategoria(dataMantenimientosFiltered, categoria)
     return Object.keys(datosOrg).length
 
-},[categoria,dataMantenimientosFiltered])
+  }, [categoria, dataMantenimientosFiltered])
 
 
   return (
@@ -155,7 +159,15 @@ const Home = () => {
             ) : (
               <>
                 <CategorySelector setCategoria={setCategoria} />
-                <ListView data={[...dataMantenimientosFiltered].reverse()} setDatos={setDataMantenimientos} viewAll={viewAll} categoria={categoria} />
+                <ListView
+                  data={[...dataMantenimientosFiltered].reverse()}
+                  setDatos={setDataMantenimientos}
+                  viewAll={viewAll}
+                  categoria={categoria}
+                  instituciones = {instituciones}
+                  servicios = {servicios}
+                  modelos = {modelos}
+                />
               </>
             )
           ) : (

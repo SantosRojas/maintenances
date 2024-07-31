@@ -1,14 +1,30 @@
 import { Box, Typography, Button, Checkbox } from '@mui/material';
 import { useTheme } from '@emotion/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import MyItem from './MyItem';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { organizarDatosPorCategoria } from '../utils/common';
 
 
-const ListView = ({ data, setDatos, viewAll, categoria }) => {
-    const datosOrganizados = organizarDatosPorCategoria(data,categoria)
+const ListView = ({ data, setDatos, viewAll, categoria,instituciones, servicios, modelos }) => {
+    const datosOrganizados = organizarDatosPorCategoria(data, categoria)
     const [showDoneIcon, setShowDoneIcon] = useState(false)
+
+    //VARIABLES EL FETCH
+    const [repuestos, setRepuestos] = useState(null);
+    const [softwareVersions, setSoftwareVersions] = useState([])
+    useEffect(() => {
+        Promise.all([
+            fetch("https://ssttapi.mibbraun.pe/repuestos").then((response) => response.json()),
+            fetch("https://ssttapi.mibbraun.pe/softwareversion").then((response) => response.json())
+        ])
+            .then(([repuestosData, softwareVersionsData]) => {
+                setRepuestos(repuestosData);
+                setSoftwareVersions(softwareVersionsData)
+            })
+            .catch((error) => console.error(error));
+    }, []);
+
     let datosLimitados
     const [showMaintenanceStates, setShowMaintenanceStates] = useState(
         Object.keys(datosOrganizados).reduce((acc, key) => {
@@ -65,8 +81,8 @@ const ListView = ({ data, setDatos, viewAll, categoria }) => {
                                 showMaintenanceStates[key] && <Checkbox
                                     onChange={() => setShowDoneIcon(prevState => !prevState)}
                                     aria-label="show help"
-                                    icon={<VisibilityOff color='primary' fontSize="large"/>}
-                                    checkedIcon={<Visibility fontSize="large"/>} />
+                                    icon={<VisibilityOff color='primary' fontSize="large" />}
+                                    checkedIcon={<Visibility fontSize="large" />} />
                             }
                             <Button
                                 size="small"
@@ -80,7 +96,17 @@ const ListView = ({ data, setDatos, viewAll, categoria }) => {
                         {
                             showMaintenanceStates[key] && (
                                 datosOrganizados[key].map((item, index) => (
-                                    <MyItem key={index} item={item} setDatos={setDatos} showDoneIcon={showDoneIcon} />
+                                    <MyItem 
+                                    key={index} 
+                                    item={item} 
+                                    setDatos={setDatos} 
+                                    showDoneIcon={showDoneIcon}
+                                    instituciones ={instituciones}
+                                    servicios ={servicios}
+                                    modelos = {modelos}
+                                    repuestos = {repuestos}
+                                    softwareVersions ={softwareVersions}
+                                     />
                                 ))
                             )
                         }

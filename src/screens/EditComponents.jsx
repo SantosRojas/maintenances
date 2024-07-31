@@ -83,7 +83,7 @@ const EditComponents = () => {
                         gap=".5rem"
                         paddingBottom=".5rem"
                     >
-                        <IconButton color="primary" aria-label="arrow-back" onClick={() => navigate(`/addc/${key}`)}>
+                        <IconButton color="primary" aria-label="arrow-back" onClick={() => key === "repuesto" ? navigate(`/addc/${key}`): navigate(`/home`)}>
                             <ArrowBackRoundedIcon fontSize="large" />
                         </IconButton>
                         <Typography variant="h6">Editar {key}</Typography>

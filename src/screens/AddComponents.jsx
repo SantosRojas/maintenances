@@ -1,10 +1,11 @@
 import { useState } from "react"
 import { useNavigate, useParams } from "react-router-dom";
-import { Container, Paper, Box, Button, CircularProgress, Modal, TextField, Typography, IconButton } from "@mui/material"
+import { Container, Paper, Box, Button, TextField, Typography, IconButton } from "@mui/material"
 import Exito from "../components/Exito"
 import Error from "../components/Error"
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import EditIcon from '@mui/icons-material/Edit';
+import LoadingModal from "../components/LoadingModal";
 
 const AddComponents = () => {
     const { key } = useParams();
@@ -18,9 +19,9 @@ const AddComponents = () => {
     const navigate = useNavigate()
 
     const keyMap = {
-        "servicio":"servicios",
-        "institucion":"instituciones",
-        "repuesto":"repuestos"
+        "servicio": "servicios",
+        "institucion": "instituciones",
+        "repuesto": "repuestos"
     }
 
 
@@ -59,7 +60,7 @@ const AddComponents = () => {
     const handleAddData = async (e) => {
         e.preventDefault();
         setLoading(true);
-        
+
         const dataToSend = {
             [key]: component
         };
@@ -76,6 +77,11 @@ const AddComponents = () => {
         }
     };
 
+    const handleAcept = () => {
+        setShowForm(true)
+        setComponent("")
+    }
+
 
     return (
         <Container maxWidth="xs" style={{ display: "flex" }}>
@@ -91,7 +97,7 @@ const AddComponents = () => {
                     alignItems="center"
                 >
                     <IconButton color="primary" aria-label="arrow-back" onClick={e => navigate("/home")}>
-                        <ArrowBackRoundedIcon fontSize="large"/>
+                        <ArrowBackRoundedIcon fontSize="large" />
                     </IconButton>
 
                     <Typography variant="h6" sx={{ fontWeight: "bold" }}>{key.toUpperCase()}S</Typography>
@@ -115,25 +121,13 @@ const AddComponents = () => {
                                 <Button type="submit" variant="contained" sx={{ fontWeight: "bold" }} >Agregar</Button>
 
                                 {loading && (
-                                    <Modal
-                                        open={loading}
-                                        onClose={() => setLoading(false)}
-                                        aria-labelledby="modal-modal-title"
-                                        aria-describedby="modal-modal-description"
-                                    >
-                                        <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-                                            <CircularProgress />
-                                            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                                                Agregando {key}
-                                            </Typography>
-                                        </Box>
-                                    </Modal>
+                                    <LoadingModal loading={loading} setLoading={setLoading} message = {`Agregando ${key}`}/>
                                 )}
                             </form>
                         </Box>
                     ) : (
                         exito ? (
-                            <Exito setShowForm={setShowForm} message={key} />
+                            <Exito handleAcept={handleAcept} message={`${key} agregado con exito`} showButton = {false} />
                         ) : (
                             < Error setShowForm={setShowForm} />
                         )

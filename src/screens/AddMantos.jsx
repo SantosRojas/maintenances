@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom";
-import { Container, Paper, Autocomplete, Box, Button, CircularProgress, Modal, TextField, Typography, IconButton } from "@mui/material"
+import { Container, Paper, Autocomplete, Box, Button, TextField, Typography, IconButton } from "@mui/material"
 import { formatDate, handleAddComponent } from "../utils/common"
 import ListadoRepuestos from "../components/ListadoRepuestos"
 import Exito from "../components/Exito"
@@ -9,6 +9,7 @@ import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import { FormSkeleton } from "../components/skeleton";
 import Warning from "../components/Warning";
 import MyInput from "../components/MyInput";
+import LoadingModal from "../components/LoadingModal";
 
 const AddMantos = () => {
 
@@ -250,6 +251,10 @@ const AddMantos = () => {
         setRepuestosCambiados(updatedItems);
     };
 
+    const handleAcept = () => {
+        setShowForm(true)
+    }
+
     return (
         <Container maxWidth="xs" style={{ display: "flex" }}>
             <Paper
@@ -267,7 +272,7 @@ const AddMantos = () => {
                         <ArrowBackRoundedIcon fontSize="large" />
                     </IconButton>
 
-                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>Nuevo Mantenimiento</Typography>
+                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>Ver Registros</Typography>
 
                 </Box>
                 {
@@ -402,19 +407,7 @@ const AddMantos = () => {
                                             sx={{ fontWeight: "bold" }} >Agregar</Button>
 
                                         {loading && (
-                                            <Modal
-                                                open={loading}
-                                                onClose={() => setLoading(false)}
-                                                aria-labelledby="modal-modal-title"
-                                                aria-describedby="modal-modal-description"
-                                            >
-                                                <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-                                                    <CircularProgress />
-                                                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                                                        Agregando incidencia
-                                                    </Typography>
-                                                </Box>
-                                            </Modal>
+                                            <LoadingModal loading={loading} setLoading={setLoading} message="Agregando mantenimiento"/>
                                         )}
                                     </form>
                                 ) : <FormSkeleton />
@@ -422,7 +415,7 @@ const AddMantos = () => {
                         </Box>
                     ) : (
                         exito ? (
-                            <Exito setShowForm={setShowForm} />
+                            <Exito handleAcept={handleAcept} message="Registrado con éxito" />
                         ) : (
                             warning ? (
                                 <Warning setShowForm={setShowForm} />
