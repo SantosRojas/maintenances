@@ -6,6 +6,7 @@ import Error from "../components/Error"
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import EditIcon from '@mui/icons-material/Edit';
 import LoadingModal from "../components/LoadingModal";
+import { setUrl } from "../utils/common";
 
 const AddComponents = () => {
     const { key } = useParams();
@@ -27,7 +28,7 @@ const AddComponents = () => {
 
     const sendData = (dataToSend) => {
 
-        fetch(`https://ssttapi.mibbraun.pe/${keyMap[key]}`, {
+        fetch(setUrl(`${keyMap[key]}`), {
             method: "POST",
             mode: "cors",
             headers: {

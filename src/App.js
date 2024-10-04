@@ -5,11 +5,11 @@ import Home from './screens/Home';
 import AddComponents from './screens/AddComponents';
 import EditComponents from './screens/EditComponents';
 
-function App() {
+function App({setPrimaryColor}) {
   return (
     <Router>
       <Routes>
-        <Route index element={<Login/>} />
+        <Route index element={<Login setPrimaryColor ={setPrimaryColor}/>} />
         <Route path='/home' element={<Home />} />
         <Route path='/add' element={<AddMantos />} />
         <Route path='/addc/:key' element={<AddComponents />} />

@@ -8,7 +8,7 @@ import CustomizedTreeView from "../components/CustomizedTreeView";
 import ListView from "../components/ListView";
 import AddSi from "../components/AddSi";
 import { ListSkeleton } from "../components/skeleton";
-import { assignIds, formatDate, getUniqueFields, handleDownloadExcel, organizarDatosPorCategoria } from "../utils/common";
+import { assignIds, formatDate, getUniqueFields, handleDownloadExcel, organizarDatosPorCategoria, setUrl } from "../utils/common";
 import { searchOptions, urlMantos, useInitialData, useInitialSearchTerm } from "../utils/constants";
 import { useNavigate } from "react-router-dom";
 import { fetchDatos } from "../utils/funtionsHome";
@@ -38,9 +38,9 @@ const Home = () => {
       try {
         const [dataMants, dataInsts, dataServs, dataMods] = await Promise.all([
           fetchDatos(urlMantos(objetCurrentUser.id)),
-          fetchDatos("https://ssttapi.mibbraun.pe/instituciones"),
-          fetchDatos("https://ssttapi.mibbraun.pe/servicios"),
-          fetchDatos("https://ssttapi.mibbraun.pe/tipos"),
+          fetchDatos(setUrl("instituciones")),
+          fetchDatos(setUrl("servicios")),
+          fetchDatos(setUrl("tipos")),
         ]);
 
         setInstituciones(dataInsts)

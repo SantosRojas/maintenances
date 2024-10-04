@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom";
 import { Container, Paper, Autocomplete, Box, Button, TextField, Typography, IconButton } from "@mui/material"
-import { formatDate, handleAddComponent } from "../utils/common"
+import { formatDate, handleAddComponent, setUrl } from "../utils/common"
 import ListadoRepuestos from "../components/ListadoRepuestos"
 import Exito from "../components/Exito"
 import Error from "../components/Error"
@@ -70,12 +70,12 @@ const AddMantos = () => {
     useEffect(() => {
         // Realiza las solicitudes de datos una vez cuando el componente se monta
         Promise.all([
-            fetch("https://ssttapi.mibbraun.pe/instituciones").then((response) => response.json()),
-            fetch("https://ssttapi.mibbraun.pe/servicios").then((response) => response.json()),
-            fetch("https://ssttapi.mibbraun.pe/tipos").then((response) => response.json()),
-            fetch("https://ssttapi.mibbraun.pe/repuestos").then((response) => response.json()),
-            fetch(`https://ssttapi.mibbraun.pe/lastmaintenace/${currentUser.id}`).then((response) => response.json()),
-            fetch("https://ssttapi.mibbraun.pe/softwareversion").then((response) => response.json())
+            fetch(setUrl("instituciones")).then((response) => response.json()),
+            fetch(setUrl("servicios")).then((response) => response.json()),
+            fetch(setUrl("tipos")).then((response) => response.json()),
+            fetch(setUrl("repuestos")).then((response) => response.json()),
+            fetch(setUrl(`lastmaintenace/${currentUser.id}`)).then((response) => response.json()),
+            fetch(setUrl("softwareversion")).then((response) => response.json())
 
         ])
             .then(([institucionesData, serviciosData, modelosData, repuestosData, lastMaintenanceData, softwareVersionsData]) => {
@@ -116,7 +116,7 @@ const AddMantos = () => {
 
 
     const sendData = (dataToSend) => {
-        fetch("https://ssttapi.mibbraun.pe/mantenimientos", {
+        fetch(setUrl("mantenimientos"), {
             method: "POST",
             mode: "cors",
             headers: {
@@ -219,9 +219,8 @@ const AddMantos = () => {
                 "software_version":newSoftwareVersion.software_version,
                 "work_hours": workHours
             };
-            console.log(dataToSend);
 
-            const response = await fetch("https://ssttapi.mibbraun.pe/mantenimientos");
+            const response = await fetch(setUrl("mantenimientos"));
             const data = await response.json();
 
             // Verificar si la serie coincide para la misma fecha

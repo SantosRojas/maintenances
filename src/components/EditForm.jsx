@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Autocomplete, Box, Button, TextField } from "@mui/material";
-import { formatDate } from "../utils/common";
+import { formatDate, setUrl } from "../utils/common";
 import ListadoRepuestos from "../components/ListadoRepuestos";
 import Exito from "../components/Exito";
 import Error from "../components/Error";
@@ -71,7 +71,7 @@ export const EditForm = ({ setData, mantenimiento, instituciones, servicios, mod
             "work_hours": workHours
         };
 
-        fetch(`https://ssttapi.mibbraun.pe/mantenimientos/${mantenimiento.id}`, {
+        fetch(setUrl(`mantenimientos/${mantenimiento.id}`), {
             method: "PATCH",
             mode: "cors",
             headers: {

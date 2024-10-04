@@ -3,8 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { Box, Button, Chip, CircularProgress, Container, IconButton, InputAdornment, Modal, Paper, TextField, Typography } from "@mui/material";
 import FaceIcon from '@mui/icons-material/Face';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { setUrl } from "../utils/common";
+import ColorPicker from "../components/ColorPicker";
 
-const Login = () => {
+const Login = ({setPrimaryColor}) => {
     const [formState, setFormState] = useState({
         errorPopupOpen: false,
         errorMessage: "Usuario o contraseña incorrectos.",
@@ -26,7 +28,7 @@ const Login = () => {
         setFormState({ ...formState, loading: true });
 
         try {
-            const response = await fetch("https://ssttapi.mibbraun.pe/login", {
+            const response = await fetch(setUrl("login"), {
                 method: 'POST',
                 mode: "cors",
                 headers: {
@@ -109,6 +111,7 @@ const Login = () => {
                         Iniciar sesión
                     </Button>
                 </Box>
+                <ColorPicker setPrimaryColor = {setPrimaryColor} />
                 <Modal open={formState.errorPopupOpen} onClose={closeErrorPopup}>
                     <div style={{
                         position: 'absolute',

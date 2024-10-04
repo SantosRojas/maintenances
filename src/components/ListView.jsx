@@ -3,7 +3,7 @@ import { useTheme } from '@emotion/react';
 import { useEffect, useState } from 'react';
 import MyItem from './MyItem';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { organizarDatosPorCategoria } from '../utils/common';
+import { organizarDatosPorCategoria, setUrl } from '../utils/common';
 
 
 const ListView = ({ data, setDatos, viewAll, categoria,instituciones, servicios, modelos }) => {
@@ -15,8 +15,8 @@ const ListView = ({ data, setDatos, viewAll, categoria,instituciones, servicios,
     const [softwareVersions, setSoftwareVersions] = useState([])
     useEffect(() => {
         Promise.all([
-            fetch("https://ssttapi.mibbraun.pe/repuestos").then((response) => response.json()),
-            fetch("https://ssttapi.mibbraun.pe/softwareversion").then((response) => response.json())
+            fetch(setUrl("repuestos")).then((response) => response.json()),
+            fetch(setUrl("softwareversion")).then((response) => response.json())
         ])
             .then(([repuestosData, softwareVersionsData]) => {
                 setRepuestos(repuestosData);

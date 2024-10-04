@@ -22,6 +22,7 @@ import { CheckCircle, CircleOutlined } from "@mui/icons-material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { EditForm } from "./EditForm";
+import { setUrl } from "../utils/common";
 
 
 const MyItem = ({ item, setDatos, showDoneIcon, instituciones, servicios, modelos, repuestos, softwareVersions }) => {
@@ -52,7 +53,7 @@ const MyItem = ({ item, setDatos, showDoneIcon, instituciones, servicios, modelo
         setOpenDialog(false);
 
         try {
-            const response = await fetch(`https://ssttapi.mibbraun.pe/mantenimientos/${data.id}`, {
+            const response = await fetch(setUrl(`mantenimientos/${data.id}`), {
                 method: "DELETE",
                 mode: "cors",
             });

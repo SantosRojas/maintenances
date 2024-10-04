@@ -1,6 +1,7 @@
 import { useMemo } from "react";
+import { setUrl } from "./common";
 
-export const urlMantos = (userId) => `https://ssttapi.mibbraun.pe/mantenimientos/responsableid/${userId}`;
+export const urlMantos = (userId) => setUrl(`mantenimientos/responsableid/${userId}`);
 
 export const searchOptions = [
   { id: 6, key: "fecha_registro", labelSearch: "Fecha de registro", labelMenu: "Buscar por Fecha" },
@@ -32,3 +33,5 @@ export function useInitialShowFilter() {
   const data = useMemo(() => createInitialData(false), []);
   return data;
 }
+
+export const baseUrl = "https://srv586737.hstgr.cloud/api/"

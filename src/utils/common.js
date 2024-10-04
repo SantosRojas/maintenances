@@ -1,4 +1,5 @@
 import ExcelJS from "exceljs"
+import { baseUrl } from "./constants";
 
 export function formatDate(dateString, firstYear = false, separator = '-') {
   const inputDate = dateString ? new Date(dateString) : new Date(); // Usar fecha actual si no se proporciona ninguna cadena
@@ -161,7 +162,7 @@ export const handleAddComponent = async (component) => {
 
 
   try {
-    const response = await fetch(`https://ssttapi.mibbraun.pe/${ruta}`, {
+    const response = await fetch(setUrl(`${ruta}`), {
       method: "POST",
       mode: "cors",
       headers: {
@@ -182,4 +183,17 @@ export const handleAddComponent = async (component) => {
     console.error('Error:', err); // Puedes configurar esto según tus necesidades
     throw err;
   }
+};
+
+export const setUrl = (url) => {
+  return baseUrl + url;
+}
+
+
+export const saveColorToLocalStorage = (color) => {
+  localStorage.setItem('selectedColor', color); // 'selectedColor' es la clave y 'color' es el valor
+};
+
+export const getColorFromLocalStorage = () => {
+  return localStorage.getItem('selectedColor') || '#7253db'; // Devuelve un color por defecto si no hay uno guardado
 };

@@ -6,6 +6,7 @@ import SearchOffIcon from '@mui/icons-material/SearchOff';
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import EditComponentItem from "../components/EditComponentItem";
 import { ListSkeleton } from "../components/skeleton";
+import { setUrl } from "../utils/common";
 
 const EditComponents = () => {
     const navigate = useNavigate();
@@ -26,7 +27,7 @@ const EditComponents = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const responseComponents = await fetch(`https://ssttapi.mibbraun.pe/${endUrl}`);
+                const responseComponents = await fetch(setUrl(`${endUrl}`));
                 if (!responseComponents.ok) {
                     throw new Error(`Hubo un problema con la petición Fetch de ${key}s` + responseComponents.status);
                 }
